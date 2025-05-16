@@ -57,6 +57,17 @@ const testCaseSchema = new mongoose.Schema(
                 message: (props) => `${props.value} is not a valid date!`,
             }
         },
+        verified: {
+            type: Boolean,
+            required: true,
+            default: false,
+            validate: {
+                validator: function (v) {
+                    return typeof v === 'boolean';
+                },
+                message: (props) => `${props.value} is not a valid verified status! It should be a boolean.`,
+            }
+        }
     }, { timestamps: true }
 );
 
