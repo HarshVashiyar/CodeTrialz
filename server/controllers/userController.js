@@ -1,5 +1,19 @@
 const User = require("../models/userDB");
 
+const handleCheckAuthStatus = async (req, res) => {
+    try {
+        const user = req.user;
+        if (!user) {
+            return res.status(401).json({ success: false, isAuthenticated: false });
+        }
+        return res.status(200).json({ success: true, isAuthenticated: true });
+    }
+    catch (error) {
+        console.error("Error checking authentication status:", error);
+        return res.status(500).json({ success: false, isAuthenticated: false });
+    }
+}
+
 const handleUserSignUp = async (req, res) => {
     const { fullName, email, password } = req.body;
     if (!fullName || !email || !password) {
@@ -50,6 +64,9 @@ const handleUserSignIn = async (req, res) => {
     }
     catch (error) {
         console.error("Error signing in user:", error);
+        if (error.statusCode === 401 || error.statusCode === 404) {
+            return res.status(error.statusCode).json({ success: false, message: "Email or Password is incorrect." });
+        }
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 }
@@ -66,7 +83,7 @@ const handleGetAllUsers = async (req, res) => {
 }
 
 const handleGetUserById = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.user;
     try {
         const user = await User.findById(id);
         if (!user) {
@@ -81,7 +98,7 @@ const handleGetUserById = async (req, res) => {
 }
 
 const handleUpdateUser = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.user;
     const { fullName, email, password, dob, pathToProfilePhoto, numberOfProblemsSolved, problemsCreated, submissions } = req.body;
     try {
         const user = await User.findById(id);
@@ -106,7 +123,7 @@ const handleUpdateUser = async (req, res) => {
 }
 
 const handleDeleteUser = async (req, res) => {
-    const { id } = req.params;
+    const { id } = req.user;
     try {
         const user = await User.findByIdAndDelete(id);
         if (!user) {
@@ -132,6 +149,7 @@ const handleLogout = async (req, res) => {
 }
 
 module.exports = {
+    handleCheckAuthStatus,
     handleUserSignUp,
     handleUserSignIn,
     handleGetAllUsers,
