@@ -6,109 +6,52 @@ const problemSchema = new mongoose.Schema(
             type: String,
             required: true,
             trim: true,
-            minLength: 3,
-            maxLength: 50,
+            minLength: [3, "Problem name should be at least 3 characters long."],
+            maxLength: [20, "Problem name should be at most 20 characters long."],
             validate: {
                 validator: function (v) {
-                    return /^[a-zA-Z\s]+$/.test(v);
+                    return /^[a-zA-Z\s0-9]+$/.test(v);
                 },
-                message: (props) => `${props.value} is not a valid name! Only alphabets and spaces are allowed.`,
+                message: "Only alphabets, spaces and numbers are allowed in the problem name.",
             }
         },
         difficulty: {
             type: Number,
             required: true,
-            min: 800,
-            max: 2500,
-            validate: {
-                validator: function (v) {
-                    return Number.isInteger(v) && v >= 800 && v <= 2500;
-                },
-                message: (props) => `${props.value} is not a valid difficulty! It should be an integer between 800 and 2500.`,
-            }
         },
         tags: {
             type: [String],
             required: true, 
-            default: [],
-            validate: {
-                validator: function (v) {
-                    return Array.isArray(v) && v.every(tag => typeof tag === 'string');
-                },
-                message: (props) => `${props.value} is not a valid tags array! Each tag should be a string.`,
-            }
+            default: []
         },
         statement: {
             type: String,
             required: true,
             trim: true,
-            minLength: 10,
-            validate: {
-                validator: function (v) {
-                    return v.length >= 10;
-                },
-                message: (props) => `${props.value} is not a valid statement! It should be at least 10 characters long.`,
-            }
+            minlength: [10, "Statement should be at least 10 characters long."],
         },
-        testCases: {
-            type: mongoose.MongooseSchema.Types.ObjectId,
+        inputFormat: {
+            type: String,
             required: true,
-            default: null,
+            trim: true,
         },
-        solutions: {
-            type: [mongoose.MongooseSchema.Types.ObjectId],
+        outputFormat: {
+            type: String,
             required: true,
-            default: [],
-            validate: {
-                validator: function (v) {
-                    return Array.isArray(v) && v.every(solution => mongoose.Types.ObjectId.isValid(solution));
-                },
-                message: (props) => `${props.value} is not a valid solutions array! Each solution should be a valid ObjectId.`,
-            }
+            trim: true,
         },
+        testCases: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestCase' }],
+        solutions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Solution' }],
         createdBy: {
-            type: mongoose.MongooseSchema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
             default: null,
-            validate: {
-                validator: function (v) {
-                    return mongoose.Types.ObjectId.isValid(v);
-                },
-                message: (props) => `${props.value} is not a valid ObjectId!`,
-            }
-        },
-        createdAt: {
-            type: Date,
-            required: true,
-            default: Date.now,
-            validate: {
-                validator: function (v) {
-                    return v instanceof Date && !isNaN(v);
-                },
-                message: (props) => `${props.value} is not a valid date!`,
-            }
-        },
-        updatedAt: {
-            type: Date,
-            required: true,
-            default: Date.now,
-            validate: {
-                validator: function (v) {
-                    return v instanceof Date && !isNaN(v);
-                },
-                message: (props) => `${props.value} is not a valid date!`,
-            }
         },
         verified: {
             type: Boolean,
             required: true,
             default: false,
-            validate: {
-                validator: function (v) {
-                    return typeof v === 'boolean';
-                },
-                message: (props) => `${props.value} is not a valid boolean!`,
-            }
         },
     }, { timestamps: true }
 );

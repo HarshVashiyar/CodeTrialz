@@ -23,7 +23,6 @@ const Profile = () => {
         );
         if (response.data?.success === true) {
           setUser(response.data.user);
-          console.log(response.data.user);
           setIsLoading(false);
           toast.dismiss(toastID);
           toast.success("User data loaded successfully!");

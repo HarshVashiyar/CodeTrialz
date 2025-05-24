@@ -63,7 +63,7 @@ function validateToken(token) {
 const authenticateUser = (req, res, next) => {
     const token = req.cookies?.token;
     if (!token) {
-        return res.status(401).json({ success: false, message: 'Authorization token is missing' });
+        return res.status(401).json({ success: false, message: 'Please Sign in first (Authorization token is missing)' });
     }
     try {
         const userPayload = validateToken(token);

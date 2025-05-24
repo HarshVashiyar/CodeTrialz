@@ -5,6 +5,7 @@ const testCaseSchema = new mongoose.Schema(
         input: {
             type: String,
             required: true,
+            default: '',
             trim: true,
             validate: {
                 validator: function (v) {
@@ -16,6 +17,7 @@ const testCaseSchema = new mongoose.Schema(
         output: {
             type: String,
             required: true,
+            default: '',
             trim: true,
             validate: {
                 validator: function (v) {
@@ -28,45 +30,12 @@ const testCaseSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             required: true,
             ref: 'Problem',
-            validate: {
-                validator: function (v) {
-                    return mongoose.Types.ObjectId.isValid(v);
-                },
-                message: (props) => `${props.value} is not a valid ObjectId!`,
-            }
-        },
-        createdAt: {
-            type: Date,
-            required: true,
-            default: Date.now,
-            validate: {
-                validator: function (v) {
-                    return v instanceof Date && !isNaN(v);
-                },
-                message: (props) => `${props.value} is not a valid date!`,
-            }
-        },
-        updatedAt: {
-            type: Date,
-            required: true,
-            default: Date.now,
-            validate: {
-                validator: function (v) {
-                    return v instanceof Date && !isNaN(v);
-                },
-                message: (props) => `${props.value} is not a valid date!`,
-            }
+            index: true,
         },
         verified: {
             type: Boolean,
             required: true,
             default: false,
-            validate: {
-                validator: function (v) {
-                    return typeof v === 'boolean';
-                },
-                message: (props) => `${props.value} is not a valid verified status! It should be a boolean.`,
-            }
         }
     }, { timestamps: true }
 );

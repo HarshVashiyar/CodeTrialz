@@ -29,7 +29,6 @@ const handleUserSignUp = async (req, res) => {
         return res.status(201).json({ success: true, message: "User created successfully" });
     }
     catch (error) {
-        // Check for Mongoose validation errors
         if (error.name === "ValidationError") {
             const messages = Object.values(error.errors).map(val => val.message);
             return res.status(400).json({ success: false, message: messages.join(", ") });

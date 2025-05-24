@@ -32,15 +32,6 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true,
-            trim: true,
-            minLength: 8,
-            maxLength: 20,
-            validate: {
-                validator: function(v) {
-                    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/.test(v);
-                },
-                message: `Password must be 8-20 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character.`,
-            }
         },
         role: {
             type: String,
@@ -52,12 +43,6 @@ const userSchema = new mongoose.Schema(
             type: Date,
             //required: true,
             //default: DateTime.now,
-            validate: {
-                validator: function(v) {
-                    return v instanceof Date && !isNaN(v);
-                },
-                message: (props) => `${props.value} is not a valid date!`,
-            }
         },
         pathToProfilePhoto: {
             type: String,
@@ -78,11 +63,13 @@ const userSchema = new mongoose.Schema(
         },
         problemsCreated: {
             type: [mongoose.Schema.Types.ObjectId],
+            ref: 'Problem',
             required: true,
             default: [],
         },
         submissions: {
             type: [mongoose.Schema.Types.ObjectId],
+            ref: 'Solution',
             required: true,
             default: [],
         },

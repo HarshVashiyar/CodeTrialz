@@ -11,6 +11,9 @@ import Verifyotp from "./Pages/Verifyotp";
 import Resetpassword from "./Pages/Resetpassword";
 import Profile from "./Pages/Profile";
 import Compiler from "./Pages/Compiler";
+import Addproblem from "./Pages/Addproblem";
+import Addtestcase from "./Pages/Addtestcase";
+import ViewProblem from "./Pages/Viewproblem";
 
 function App() {
   return (
@@ -26,6 +29,9 @@ function App() {
           <Route path="/resetpassword" element={<Resetpassword />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/compiler" element={<Compiler />} />
+          <Route path="/addproblem" element={<Addproblem />} />
+          <Route path="/addtestcase" element={<Addtestcase />} />
+          <Route path="/viewproblem" element={<ViewProblem />} />
         </Routes>
         {/* <Toaster position="top-right" richColors /> */}
       </div>
