@@ -82,7 +82,7 @@ const authenticateUser = (req, res, next) => {
 
 const authorizeAdmin = (req, res, next) => {
     const user = req.user;
-    if (!user || !user.role || user.role !== 'Admin') {
+    if (!user || !user.role || user.role != 'Admin') {
         return res.status(403).json({ success: false, message: 'Forbidden' });
     }
     next();

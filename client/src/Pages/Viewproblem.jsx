@@ -95,28 +95,35 @@ const ViewProblem = () => {
               Sample Test Cases
             </h3>
             {problem.testCases && problem.testCases.length > 0 ? (
-              <ul className="space-y-2">
-                {problem.testCases.map((tc, idx) => (
-                  <li key={idx} className="bg-gray-100 border rounded p-2">
-                    <div>
-                      <span className="font-semibold text-blue-700">
-                        Input:
-                      </span>
-                      <pre className="bg-gray-50 rounded p-1 mt-0.5 mb-1 overflow-x-auto text-gray-700">
-                        {tc.input}
-                      </pre>
-                    </div>
-                    <div>
-                      <span className="font-semibold text-blue-700">
-                        Expected Output:
-                      </span>
-                      <pre className="bg-gray-50 rounded p-1 mt-0.5 overflow-x-auto text-gray-700">
-                        {tc.output}
-                      </pre>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul className="space-y-2">
+                  {problem.testCases.slice(0, 2).map((tc, idx) => (
+                    <li key={idx} className="bg-gray-100 border rounded p-2">
+                      <div>
+                        <span className="font-semibold text-blue-700">
+                          Input:
+                        </span>
+                        <pre className="bg-gray-50 rounded p-1 mt-0.5 mb-1 overflow-x-auto text-gray-700">
+                          {tc.input}
+                        </pre>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-blue-700">
+                          Expected Output:
+                        </span>
+                        <pre className="bg-gray-50 rounded p-1 mt-0.5 overflow-x-auto text-gray-700">
+                          {tc.output}
+                        </pre>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {problem.testCases.length > 2 && (
+                  <p className="text-gray-500 text-sm mt-2 italic">
+                    + {problem.testCases.length - 2} more test cases...
+                  </p>
+                )}
+              </>
             ) : (
               <p className="text-gray-400">No test cases available.</p>
             )}

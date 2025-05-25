@@ -14,6 +14,7 @@ import Compiler from "./Pages/Compiler";
 import Addproblem from "./Pages/Addproblem";
 import Addtestcase from "./Pages/Addtestcase";
 import ViewProblem from "./Pages/Viewproblem";
+import Admin from "./Pages/Admin";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/addproblem" element={<Addproblem />} />
           <Route path="/addtestcase" element={<Addtestcase />} />
           <Route path="/viewproblem" element={<ViewProblem />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
         {/* <Toaster position="top-right" richColors /> */}
       </div>

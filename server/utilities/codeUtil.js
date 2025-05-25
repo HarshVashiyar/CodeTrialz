@@ -8,6 +8,11 @@ if(!fs.existsSync(codeDirectory)) {
     fs.mkdirSync(codeDirectory, { recursive: true });
 }
 
+const inputDirectory = path.join(__dirname, "../inputs");
+if(!fs.existsSync(inputDirectory)) {
+    fs.mkdirSync(inputDirectory, { recursive: true });
+}
+
 const outputDirectory = path.join(__dirname, "../outputs");
 if(!fs.existsSync(outputDirectory)) {
     fs.mkdirSync(outputDirectory, { recursive: true });
@@ -21,6 +26,14 @@ const generateFile = ({ code, language }) => {
     return filePath;
 };
 
+const generateInputFile = (input) => {
+    const jobID = uuid();
+    const inputFileName = `${jobID}.txt`;
+    const inputFilePath = path.join(inputDirectory, inputFileName);
+    fs.writeFileSync(inputFilePath, input);
+    return inputFilePath;
+}
+
 const generateOutputFile = (filePath) => {
     const jobId = path.basename(filePath).split(".")[0];
     const outputFileName = `${jobId}.out`;
@@ -29,7 +42,7 @@ const generateOutputFile = (filePath) => {
     return outputFilePath;
 };
 
-const executeCpp = (filePath) => {
+const executeCpp = (filePath, inputFilePath) => {
     const outputFilePath = generateOutputFile(filePath);
     const compileCommand = `g++ ${filePath} -o ${outputFilePath}`;
 
@@ -41,7 +54,7 @@ const executeCpp = (filePath) => {
                     message: compileStderr || compileError.message,
                 });
             }
-            exec(outputFilePath, { timeout: 3000 }, (runError, stdout, runStderr) => {
+            exec(`${outputFilePath} < ${inputFilePath}`, { timeout: 3000 }, (runError, stdout, runStderr) => {
                 if (runError) {
                     if (runError.signal === 'SIGTERM') {
                         return reject({
@@ -66,9 +79,9 @@ const executeCpp = (filePath) => {
     });
 };
 
-const executePython = (filePath) => {
+const executePython = (filePath, inputFilePath) => {
     const outputFilePath = generateOutputFile(filePath);
-    const command = `python3 ${filePath}`;
+    const command = `python3 ${filePath} < ${inputFilePath}`;
 
     return new Promise((resolve, reject) => {
         exec(command, { timeout: 3000 }, (error, stdout, stderr) => {
@@ -97,9 +110,9 @@ const executePython = (filePath) => {
     });
 };
 
-const executeJavaScript = (filePath) => {
+const executeJavaScript = (filePath, inputFilePath) => {
     const outputFilePath = generateOutputFile(filePath);
-    const command = `node ${filePath}`;
+    const command = `node ${filePath} < ${inputFilePath}`;
 
     return new Promise((resolve, reject) => {
         exec(command, { timeout: 3000 }, (error, stdout, stderr) => {
@@ -127,9 +140,9 @@ const executeJavaScript = (filePath) => {
     });
 };
 
-const executeJava = (filePath) => {
+const executeJava = (filePath, inputFilePath) => {
     const outputFilePath = generateOutputFile(filePath);
-    const command = `java ${filePath}`;
+    const command = `java ${filePath} < ${inputFilePath}`;
 
     return new Promise((resolve, reject) => {
         exec(command, { timeout: 3000 }, (error, stdout, stderr) => {
@@ -159,6 +172,7 @@ const executeJava = (filePath) => {
 
 module.exports = {
     generateFile,
+    generateInputFile,
     executeCpp,
     executePython,
     executeJavaScript,

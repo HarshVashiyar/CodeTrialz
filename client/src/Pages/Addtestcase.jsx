@@ -62,7 +62,7 @@ const AddTestcase = () => {
             );
             if (response.data?.success) {
                 toast.dismiss(toastId);
-                toast.success("Test cases added successfully!");
+                toast.success("Test cases sent for admin verification successfully!");
                 setTimeout(() => {
                     navigate('/');
                 }, 700);
@@ -92,9 +92,9 @@ const AddTestcase = () => {
                 <h2 className="text-2xl font-extrabold mb-1 text-center text-blue-700 drop-shadow">
                     Add Test Cases
                 </h2>
-                <div className="text-center mb-3">
-                    <span className="text-gray-500 text-sm bg-gray-100 px-2 py-0.5 rounded">
-                        If there are no test cases, write N/A in input and output
+                <div className="text-center mb-4">
+                    <span className="text-gray-600 text-xs bg-gray-100/80 px-3 py-1 rounded-lg shadow-sm border border-gray-200">
+                        Test cases require admin review • Use N/A if no test cases
                     </span>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-4">

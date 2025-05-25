@@ -46,9 +46,11 @@ const Addproblem = () => {
       if (response.data?.success === true) {
         toast.dismiss(toastId);
         setLoading(false);
-        toast.success("Problem added successfully!");
+        toast.success("Problem sent for admin verification successfully!");
         setTimeout(() => {
-          navigate("/addtestcase", { state: { problemId: response.data?.problem._id } });
+          navigate("/addtestcase", {
+            state: { problemId: response.data?.problem._id },
+          });
         }, 700);
       }
     } catch (error) {
@@ -75,6 +77,11 @@ const Addproblem = () => {
         <h2 className="text-2xl font-extrabold mb-1 text-center text-blue-700 drop-shadow">
           Add Problem
         </h2>
+        <div className="text-center mb-4">
+          <span className="text-gray-600 text-xs bg-gray-100/80 px-3 py-1 rounded-lg shadow-sm border border-gray-200">
+            Problem requires admin review before publishing
+          </span>
+        </div>
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-2 gap-4"

@@ -38,7 +38,7 @@ const Compiler = () => {
         {
           language,
           code,
-          // input,
+          input,
         }
       );
 
