@@ -21,6 +21,9 @@ const difficultyOptions = Array.from(
   (_, i) => 800 + i * 100
 );
 
+const gradientBorder =
+  "relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400 before:to-purple-400 before:blur-[2px] before:opacity-60 before:-z-10";
+
 const Admin = () => {
   const navigate = useNavigate();
 
@@ -46,7 +49,7 @@ const Admin = () => {
         if (response.data?.success) {
           setProblems(response.data.problems);
           setFilteredProblems(response.data.problems);
-          toast.success("Problems loaded!");
+          toast.success("Welcome to the admin panel!");
         } else {
           toast.error("Failed to load problems.");
         }
@@ -54,7 +57,7 @@ const Admin = () => {
         toast.error("Something went wrong!");
       } finally {
         setLoading(false);
-        toast.dismiss();
+        toast.dismiss(toastId);
       }
     };
     fetchProblems();
@@ -91,11 +94,11 @@ const Admin = () => {
   };
 
   const handleSelectProblem = (problemId) => {
-    if (problemId === 'all') {
+    if (problemId === "all") {
       if (selectedProblems.length === filteredProblems.length) {
         setSelectedProblems([]);
       } else {
-        setSelectedProblems(filteredProblems.map(p => p._id));
+        setSelectedProblems(filteredProblems.map((p) => p._id));
       }
     } else {
       setSelectedProblems((prev) =>
@@ -114,14 +117,18 @@ const Admin = () => {
     const toastId = toast.loading("Removing selected problems...");
     try {
       const response = await axios.delete(
-        `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_REMOVE_PROBLEMS_URL}`,
+        `${import.meta.env.VITE_BASE_URL}${
+          import.meta.env.VITE_REMOVE_PROBLEMS_URL
+        }`,
         {
           data: { problemIds: selectedProblems },
-          withCredentials: true
+          withCredentials: true,
         }
       );
       if (response.data?.success === true) {
-        setProblems(prev => prev.filter(p => !selectedProblems.includes(p._id)));
+        setProblems((prev) =>
+          prev.filter((p) => !selectedProblems.includes(p._id))
+        );
         setSelectedProblems([]);
         toast.success("Problems removed successfully!");
       } else {
@@ -142,12 +149,16 @@ const Admin = () => {
     const toastId = toast.loading("Verifying selected problems...");
     try {
       const response = await axios.patch(
-        `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_VERIFY_PROBLEMS_URL}`,
+        `${import.meta.env.VITE_BASE_URL}${
+          import.meta.env.VITE_VERIFY_PROBLEMS_URL
+        }`,
         { problemIds: selectedProblems },
         { withCredentials: true }
       );
       if (response.data?.success) {
-        setProblems(prev => prev.filter(p => !selectedProblems.includes(p._id)));
+        setProblems((prev) =>
+          prev.filter((p) => !selectedProblems.includes(p._id))
+        );
         setSelectedProblems([]);
         toast.success("Problems verified successfully!");
       } else {
@@ -161,188 +172,198 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 flex justify-center py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex justify-center py-8">
       <Toaster richColors position="top-center" />
-      <div className="w-full max-w-6xl">
-        <div className="bg-white rounded-xl shadow-lg px-6 py-5 mb-6 flex flex-col md:flex-row md:items-end gap-4 border border-purple-100">
-          <div className="flex-1">
-            <label className="block text-purple-700 font-semibold mb-1 text-sm">
-              Search
-            </label>
-            <input
-              type="text"
-              placeholder="Search problems..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border-2 border-purple-200 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
-            />
-          </div>
-          <div className="flex-1">
-            <span className="block text-purple-700 font-semibold mb-1 text-sm">
-              Tags
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {tagOptions.map((tag) => (
-                <label
-                  key={tag}
-                  className={`flex items-center px-2 py-0.5 rounded-full border cursor-pointer transition text-xs
-                    ${
-                      selectedTags.includes(tag)
-                        ? "bg-blue-100 border-blue-400 text-blue-700 font-semibold"
-                        : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-blue-50"
-                    }
-                  `}
-                >
-                  <input
-                    type="checkbox"
-                    className="mr-1 accent-blue-500"
-                    checked={selectedTags.includes(tag)}
-                    onChange={() => handleTagChange(tag)}
-                  />
-                  {tag.charAt(0).toUpperCase() + tag.slice(1)}
-                </label>
-              ))}
+      <div className="w-full max-w-6xl mx-auto">
+        <div
+          className={`mb-6 rounded-2xl shadow-2xl p-0 overflow-hidden ${gradientBorder}`}
+        >
+          <div className="relative z-10 bg-white bg-opacity-95 rounded-2xl p-8 flex flex-col md:flex-row md:items-end gap-4">
+            <div className="flex-1">
+              <label className="block text-purple-700 font-semibold mb-1 text-sm">
+                Search
+              </label>
+              <input
+                type="text"
+                placeholder="Search problems..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full border-2 border-purple-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 transition shadow-inner bg-gray-50"
+              />
             </div>
-          </div>
-          <div className="w-40">
-            <span className="block text-purple-700 font-semibold mb-1 text-sm">
-              Difficulty
-            </span>
-            <div className="relative">
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-white appearance-none"
-              >
-                <option value="">All</option>
-                {difficultyOptions.map((val) => (
-                  <option key={val} value={val}>
-                    {val}
-                  </option>
-                ))}
-              </select>
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-blue-400">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                  <path
-                    d="M7 10l5 5 5-5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+            <div className="flex-1">
+              <span className="block text-purple-700 font-semibold mb-1 text-sm">
+                Tags
               </span>
+              <div className="flex flex-wrap gap-2">
+                {tagOptions.map((tag) => (
+                  <label
+                    key={tag}
+                    className={`flex items-center px-3 py-1 rounded-full border cursor-pointer transition text-sm shadow-sm
+                      ${
+                        selectedTags.includes(tag)
+                          ? "bg-blue-100 border-blue-300 text-blue-700 font-semibold hover:bg-blue-200"
+                          : "bg-gray-50 border-gray-200 text-gray-600 hover:bg-blue-50"
+                      }
+                    `}
+                  >
+                    <input
+                      type="checkbox"
+                      className="mr-2 accent-blue-500 hover:cursor-pointer"
+                      checked={selectedTags.includes(tag)}
+                      onChange={() => handleTagChange(tag)}
+                    />
+                    {tag.charAt(0).toUpperCase() + tag.slice(1)}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="w-48">
+              <span className="block text-purple-700 font-semibold mb-1 text-sm">
+                Difficulty
+              </span>
+              <div className="relative">
+                <select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-gray-50 appearance-none shadow-inner hover:cursor-pointer"
+                >
+                  <option value="">All</option>
+                  {difficultyOptions.map((val) => (
+                    <option key={val} value={val}>
+                      {val}
+                    </option>
+                  ))}
+                </select>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-blue-400">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M7 10l5 5 5-5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-0 w-full">
-          {loading ? (
-            <div className="text-center text-purple-600 font-semibold py-8">
-              Loading problems...
-            </div>
-          ) : filteredProblems.length === 0 ? (
-            <div className="text-center text-gray-400 font-semibold py-8">
-              No problems found.
-            </div>
-          ) : (
-            <ul className="divide-y">
-              <li className="px-6 py-3 bg-gray-50 border-b">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedProblems.length === filteredProblems.length && filteredProblems.length > 0}
-                      onChange={() => handleSelectProblem('all')}
-                      className="accent-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-700">Select All</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleRemoveSelected}
-                      disabled={selectedProblems.length === 0}
-                      className={`bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded transition font-semibold text-sm
-                        ${selectedProblems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'}`}
-                    >
-                      Remove Selected
-                    </button>
-                    <button
-                      onClick={handleVerifySelected}
-                      disabled={selectedProblems.length === 0}
-                      className={`bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded transition font-semibold text-sm
-                        ${selectedProblems.length === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-700'}`}
-                    >
-                      Verify Selected
-                    </button>
-                  </div>
-                </div>
-              </li>
-              {filteredProblems.map((problem) => (
-                <li
-                  key={problem._id}
-                  className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-4 hover:bg-gray-50 transition"
-                >
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedProblems.includes(problem._id)}
-                      onChange={() => handleSelectProblem(problem._id)}
-                      className="accent-blue-500"
-                    />
-                    <div>
-                      <div className="text-lg font-bold text-purple-700">
-                        {problem.name}
-                      </div>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {problem.tags?.map((tag) => (
-                          <span
-                            key={tag}
-                            className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-0.5 rounded"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="mt-1 text-xs text-gray-500">
-                        Created by: {problem.createdBy?.fullName || "Unknown"}
-                      </div>
+        <div
+          className={`rounded-2xl shadow-2xl p-0 overflow-hidden ${gradientBorder}`}
+        >
+          <div className="relative z-10 bg-white bg-opacity-95 rounded-2xl">
+            {loading ? (
+              <div className="text-center text-purple-600 font-semibold py-8">
+                Loading problems...
+              </div>
+            ) : filteredProblems.length === 0 ? (
+              <div className="text-center text-gray-400 font-semibold py-8">
+                No problems found.
+              </div>
+            ) : (
+              <ul className="divide-y">
+                <li className="px-6 py-4 bg-gray-50/80 border-b">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectedProblems.length === filteredProblems.length &&
+                          filteredProblems.length > 0
+                        }
+                        onChange={() => handleSelectProblem("all")}
+                        className="accent-blue-500 hover:cursor-pointer"
+                      />
+                      <span className="text-sm font-medium text-gray-700">
+                        Select All
+                      </span>
+                    </div>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={handleRemoveSelected}
+                        disabled={selectedProblems.length === 0}
+                        className={`bg-gradient-to-r from-red-600 to-pink-600 text-white px-4 py-2 rounded-xl font-bold shadow-lg transition-all duration-200 text-sm tracking-wide focus:outline-none focus:ring-2 focus:ring-red-400
+                          ${
+                            selectedProblems.length === 0
+                              ? "opacity-50 cursor-not-allowed"
+                              : "hover:from-red-700 hover:to-pink-700 hover:cursor-pointer"
+                          }`}
+                      >
+                        Remove Selected
+                      </button>
+                      <button
+                        onClick={handleVerifySelected}
+                        disabled={selectedProblems.length === 0}
+                        className={`bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-xl font-bold shadow-lg transition-all duration-200 text-sm tracking-wide focus:outline-none focus:ring-2 focus:ring-blue-400
+                          ${
+                            selectedProblems.length === 0
+                              ? "opacity-50 cursor-not-allowed"
+                              : "hover:from-blue-700 hover:to-purple-700 hover:cursor-pointer"
+                          }`}
+                      >
+                        Verify Selected
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 mt-2 md:mt-0">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        Number(problem.difficulty) <= 1200
-                          ? "bg-green-100 text-green-700"
-                          : Number(problem.difficulty) <= 1800
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {problem.difficulty}
-                    </span>
-                    {/* <button
-                      onClick={() => handleRemoveProblem(problem._id)}
-                      className="bg-red-600 hover:bg-red-700 hover:cursor-pointer text-white px-4 py-1.5 rounded transition font-semibold text-sm"
-                    >
-                      Remove
-                    </button>
-                    <button
-                      onClick={() => handleVerifyProblem(problem._id)}
-                      className="bg-blue-600 hover:bg-blue-800 hover:cursor-pointer text-white px-4 py-1.5 rounded transition font-semibold text-sm"
-                    >
-                      Verify
-                    </button> */}
-                    <button
-                      onClick={() => handleViewProblem(problem._id)}
-                      className="bg-purple-600 hover:bg-purple-800 hover:cursor-pointer text-white px-4 py-1.5 rounded transition font-semibold text-sm"
-                    >
-                      View
-                    </button>
-                  </div>
                 </li>
-              ))}
-            </ul>
-          )}
+                {filteredProblems.map((problem) => (
+                  <li
+                    key={problem._id}
+                    className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-4 hover:bg-purple-50/40 transition group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedProblems.includes(problem._id)}
+                        onChange={() => handleSelectProblem(problem._id)}
+                        className="accent-blue-500 hover:cursor-pointer"
+                      />
+                      <div>
+                        <div className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600 group-hover:drop-shadow">
+                          {problem.name}
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {problem.tags?.map((tag) => (
+                            <span
+                              key={tag}
+                              className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-0.5 rounded"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                        <div className="mt-1 text-xs text-gray-500">
+                          Created by: {problem.createdBy?.fullName || "Unknown"}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mt-2 md:mt-0">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border
+                          ${
+                            Number(problem.difficulty) <= 1200
+                              ? "bg-green-100 text-green-700 border-green-200"
+                              : Number(problem.difficulty) <= 1800
+                              ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                              : "bg-red-100 text-red-700 border-red-200"
+                          }`}
+                      >
+                        {problem.difficulty}
+                      </span>
+                      <button
+                        onClick={() => handleViewProblem(problem._id)}
+                        className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-purple-300 hover:cursor-pointer"
+                      >
+                        View Problem
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
     </div>

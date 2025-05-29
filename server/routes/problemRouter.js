@@ -30,6 +30,6 @@ app.delete('/delete', authenticateUser, authorizeAdmin, handleDeleteProblems);
 
 app.get('/getunverified', authenticateUser, authorizeAdmin, handleGetUnverifiedProblems);
 
-app.get('/getsolutions', authenticateUser, handleGetSolutions);
+app.get('/getsolutions', handleGetSolutions);
 
 module.exports = app;

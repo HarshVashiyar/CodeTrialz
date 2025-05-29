@@ -21,6 +21,9 @@ const difficultyOptions = Array.from(
   (_, i) => 800 + i * 100
 );
 
+const gradientBorder =
+  "relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400 before:to-purple-400 before:blur-[2px] before:opacity-60 before:-z-10";
+
 const Home = () => {
   const navigate = useNavigate();
 
@@ -44,7 +47,7 @@ const Home = () => {
         if (response.data?.success) {
           setProblems(response.data.problems);
           setFilteredProblems(response.data.problems);
-          toast.success("Problems loaded!");
+          toast.success("Welcome to the home page!");
         } else {
           toast.error("Failed to load problems.");
         }
@@ -52,7 +55,7 @@ const Home = () => {
         toast.error("Something went wrong!");
       } finally {
         setLoading(false);
-        toast.dismiss();
+        toast.dismiss(toastId);
       }
     };
     fetchProblems();
@@ -93,122 +96,111 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-200 flex justify-center py-8">
+    <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-8">
       <Toaster richColors position="top-center" />
-      <div className="w-full max-w-6xl">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold text-purple-900">Problem List</h1>
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate("/compiler")}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 shadow-md hover:cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+      <div
+        className={`w-full max-w-5xl mx-auto mb-6 rounded-2xl shadow-2xl p-0 overflow-visible ${gradientBorder}`}
+        style={{ boxShadow: "0 8px 32px 0 rgba(99,102,241,0.15)" }}
+      >
+        <div className="relative z-10 bg-white bg-opacity-95 rounded-2xl p-8 flex flex-col gap-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
+            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600 drop-shadow-sm">
+              Problem List
+            </h1>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate("/compiler")}
+                className="hover:cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-purple-400"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M12.316 3.051a1 1 0 01.633 1.265l-4 12a1 1 0 11-1.898-.632l4-12a1 1 0 011.265-.633zM5.707 6.293a1 1 0 010 1.414L3.414 10l2.293 2.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0zm8.586 0a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 11-1.414-1.414L16.586 10l-2.293-2.293a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Compiler
-            </button>
-            <button
-              onClick={() => navigate("/addproblem")}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2 shadow-md hover:cursor-pointer"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
+                Compiler
+              </button>
+              <button
+                onClick={() => navigate("/addproblem")}
+                className="hover:cursor-pointer bg-gradient-to-r from-green-500 to-blue-500 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-green-300"
               >
-                <path
-                  fillRule="evenodd"
-                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              Add Problem
-            </button>
-          </div>
-        </div>
-        <div className="bg-white rounded-xl shadow-lg px-6 py-5 mb-6 flex flex-col md:flex-row md:items-end gap-4 border border-purple-100">
-          <div className="flex-1">
-            <label className="block text-purple-700 font-semibold mb-1 text-sm">
-              Search
-            </label>
-            <input
-              type="text"
-              placeholder="Search problems..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="border-2 border-purple-200 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-300 transition"
-            />
-          </div>
-          <div className="flex-1">
-            <span className="block text-purple-700 font-semibold mb-1 text-sm">
-              Tags
-            </span>
-            <div className="flex flex-wrap gap-2">
-              {tagOptions.map((tag) => (
-                <label
-                  key={tag}
-                  className={`flex items-center px-2 py-0.5 rounded-full border cursor-pointer transition text-xs
-                    ${
-                      selectedTags.includes(tag)
-                        ? "bg-blue-100 border-blue-400 text-blue-700 font-semibold"
-                        : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-blue-50"
-                    }
-                  `}
-                >
-                  <input
-                    type="checkbox"
-                    className="mr-1 accent-blue-500"
-                    checked={selectedTags.includes(tag)}
-                    onChange={() => handleTagChange(tag)}
-                  />
-                  {tag.charAt(0).toUpperCase() + tag.slice(1)}
-                </label>
-              ))}
+                Add Problem
+              </button>
             </div>
           </div>
-          <div className="w-40">
-            <span className="block text-purple-700 font-semibold mb-1 text-sm">
-              Difficulty
-            </span>
-            <div className="relative">
-              <select
-                value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value)}
-                className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-white appearance-none hover:cursor-pointer"
-              >
-                <option value="">All</option>
-                {difficultyOptions.map((val) => (
-                  <option key={val} value={val}>
-                    {val}
-                  </option>
-                ))}
-              </select>
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-blue-400">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                  <path
-                    d="M7 10l5 5 5-5"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="flex-1">
+              <label className="block text-purple-700 font-semibold mb-1 text-sm">
+                Search
+              </label>
+              <input
+                type="text"
+                placeholder="Search problems..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border-2 border-purple-200 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-300 transition font-medium text-gray-800 bg-white"
+              />
+            </div>
+            <div className="flex-1">
+              <span className="block text-purple-700 font-semibold mb-1 text-sm">
+                Tags
               </span>
+              <div className="flex flex-wrap gap-2">
+                {tagOptions.map((tag) => (
+                  <label
+                    key={tag}
+                    className={`flex items-center px-2 py-0.5 rounded-full border cursor-pointer transition text-xs
+                      ${
+                        selectedTags.includes(tag)
+                          ? "bg-blue-100 border-blue-400 text-blue-700 font-semibold"
+                          : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-blue-50"
+                      }
+                    `}
+                  >
+                    <input
+                      type="checkbox"
+                      className="mr-1 accent-blue-500"
+                      checked={selectedTags.includes(tag)}
+                      onChange={() => handleTagChange(tag)}
+                    />
+                    {tag.charAt(0).toUpperCase() + tag.slice(1)}
+                  </label>
+                ))}
+              </div>
+            </div>
+            <div className="w-40">
+              <span className="block text-purple-700 font-semibold mb-1 text-sm">
+                Difficulty
+              </span>
+              <div className="relative">
+                <select
+                  value={selectedDifficulty}
+                  onChange={(e) => setSelectedDifficulty(e.target.value)}
+                  className="w-full px-3 py-2 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition bg-white appearance-none hover:cursor-pointer text-sm font-medium"
+                >
+                  <option value="">All</option>
+                  {difficultyOptions.map((val) => (
+                    <option key={val} value={val}>
+                      {val}
+                    </option>
+                  ))}
+                </select>
+                <span
+                  style={{
+                    position: "absolute",
+                    right: "12px",
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    pointerEvents: "none",
+                    color: "#60a5fa",
+                  }}
+                >
+                  <span style={{ fontSize: "18px", color: "#60a5fa" }}>v</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-0 w-full">
+      </div>
+      <div
+        className={`w-full max-w-5xl mx-auto rounded-2xl shadow-xl p-0 overflow-hidden ${gradientBorder}`}
+        style={{ boxShadow: "0 4px 16px 0 rgba(99,102,241,0.10)" }}
+      >
+        <div className="relative z-10 bg-white bg-opacity-95 rounded-2xl p-0">
           {loading ? (
             <div className="text-center text-purple-600 font-semibold py-8">
               Loading problems...
@@ -222,10 +214,10 @@ const Home = () => {
               {filteredProblems.map((problem) => (
                 <li
                   key={problem._id}
-                  className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-4 hover:bg-gray-50 transition"
+                  className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-4 hover:bg-purple-50/40 transition group"
                 >
-                  <div>
-                    <div className="text-lg font-bold text-purple-700">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600 group-hover:drop-shadow">
                       {problem.name}
                     </div>
                     <div className="flex flex-wrap gap-2 mt-1">
@@ -244,28 +236,29 @@ const Home = () => {
                   </div>
                   <div className="flex items-center gap-4 mt-2 md:mt-0">
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        Number(problem.difficulty) <= 1200
-                          ? "bg-green-100 text-green-700"
-                          : Number(problem.difficulty) <= 1800
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
+                      className={`px-3 py-1 rounded-full text-xs font-semibold shadow-sm border
+                        ${
+                          Number(problem.difficulty) <= 1200
+                            ? "bg-green-100 text-green-700 border-green-200"
+                            : Number(problem.difficulty) <= 1800
+                            ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                            : "bg-red-100 text-red-700 border-red-200"
+                        }`}
                     >
                       {problem.difficulty}
                     </span>
-                    <a
+                    <button
                       onClick={() => handleViewProblem(problem._id)}
-                      className="bg-purple-600 hover:cursor-pointer hover:bg-purple-700 text-white px-4 py-1.5 rounded transition font-semibold text-sm"
+                      className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-purple-300 hover:cursor-pointer"
                     >
                       View Problem
-                    </a>
-                    <a
+                    </button>
+                    <button
                       onClick={() => handleViewSolutions(problem._id)}
-                      className=" bg-blue-600 hover:cursor-pointer hover:bg-blue-700 text-white px-4 py-1.5 rounded transition font-semibold text-sm"
+                      className="bg-gradient-to-r from-blue-600 to-purple-500 hover:from-blue-700 hover:to-purple-600 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300 hover:cursor-pointer"
                     >
                       View Solutions
-                    </a>
+                    </button>
                   </div>
                 </li>
               ))}
