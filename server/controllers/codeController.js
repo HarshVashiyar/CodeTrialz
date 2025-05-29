@@ -6,6 +6,25 @@ const {
     executeJavaScript,
     executeJava,
 } = require("../utilities/codeUtil");
+const Problem = require("../models/problemDB");
+const Submission = require("../models/submissionDB");
+const User = require("../models/userDB");
+const TestCase = require("../models/testCasesDB");
+
+const executeCode = async (language, filePath, inputFilePath) => {
+    switch(language.toLowerCase()) {
+        case "cpp":
+            return await executeCpp(filePath, inputFilePath);
+        case "python":
+            return await executePython(filePath, inputFilePath);
+        case "javascript":
+            return await executeJavaScript(filePath, inputFilePath);
+        case "java":
+            return await executeJava(filePath, inputFilePath);
+        default:
+            throw new Error("Unsupported language");
+    }
+};
 
 const handleRunCode = async (req, res) => {
     const { language = "cpp", code, input = "" } = req.body;
@@ -18,25 +37,8 @@ const handleRunCode = async (req, res) => {
         if (!filePath) {
             return res.status(500).json({ success: false, message: "Failed to generate file" });
         }
-        if (language == "cpp") {
-            const output = await executeCpp(filePath, inputFilePath);
-            res.status(200).json({ success: true, message: "Code generated successfully", output });
-        }
-        else if (language == "python") {
-            const output = await executePython(filePath, inputFilePath);
-            res.status(200).json({ success: true, message: "Python code executed successfully", output });
-        }
-        else if (language == "javascript") {
-            const output = await executeJavaScript(filePath, inputFilePath);
-            res.status(200).json({ success: true, message: "JavaScript code executed successfully", output });
-        }
-        else if (language == "java") {
-            const output = await executeJava(filePath, inputFilePath);
-            res.status(200).json({ success: true, message: "Java code executed successfully", output });
-        }
-        else {
-            return res.status(400).json({ success: false, message: "Unsupported language" });
-        }
+        const output = await executeCode(language, filePath, inputFilePath);
+        return res.status(200).json({ success: true, output });
     }
     catch (error) {
         console.error("Error running code:", error);
@@ -50,8 +52,127 @@ const handleRunCode = async (req, res) => {
 
         return res.status(statusCode).json({ success: false, type: errorType, message: errorMessage });
     }
-}
+};
+
+const handleSubmitCode = async (req, res) => {
+    const { problemId, language = "cpp", code } = req.body;
+    const { id } = req.user;
+    if (!id || !problemId || !code) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Missing required fields: user, problemId, and code are required" 
+        });
+    }
+    try {
+        const problem = await Problem.findById(problemId).select('testCases');
+        if (!problem) {
+            return res.status(404).json({ 
+                success: false, 
+                message: "Problem not found" 
+            });
+        }
+
+        const testCases = await TestCase.find({
+            '_id': { $in: problem.testCases }
+        });
+        if (!testCases || testCases.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "No test cases found for this problem" 
+            });
+        }
+
+        const filePath = generateFile({ code, language });
+        const executionStartTime = Date.now();
+        let maxExecutionTime = 0;
+        let verdict = "Accepted";
+        let failedTestCase = 0;
+
+        for (const [index, testCase] of testCases.entries()) {
+            try {
+                const inputFilePath = generateInputFile(testCase.input);
+                const testCaseStartTime = Date.now();
+                
+                const output = await executeCode(language, filePath, inputFilePath);
+                const testCaseExecutionTime = Date.now() - testCaseStartTime;
+                maxExecutionTime = Math.max(maxExecutionTime, testCaseExecutionTime);
+
+                if (output.trim() !== testCase.output.trim()) {
+                    verdict = "Wrong Answer";
+                    failedTestCase = index + 1;
+                    break;
+                }
+            } catch (error) {
+                verdict = error.type === "compile_error" ? "Compilation Error" :
+                         error.type === "time_limit_exceeded" ? "Time Limit Exceeded" :
+                         "Runtime Error";
+                failedTestCase = index + 1;
+                break;
+            }
+        }
+
+        const totalExecutionTime = Date.now() - executionStartTime;
+
+        const hasAlreadySolved = await Submission.findOne({
+            problem: problemId,
+            user: id,
+            verdict: "Accepted"
+        });
+
+        const submission = await Submission.create({
+            code,
+            language,
+            verdict,
+            problem: problemId,
+            user: id,
+            executionTime: maxExecutionTime,
+            score: verdict === "Accepted" ? problem.difficulty : 0,
+            failedTestCase: failedTestCase
+        });
+
+        await Promise.all([
+            User.findByIdAndUpdate(
+                id,
+                {
+                    $push: {
+                        submissions: submission._id,
+                        ...(verdict === "Accepted" ? { solutions: submission._id } : {})
+                    },
+                    ...(verdict === "Accepted" && !hasAlreadySolved ? { $inc: { numberOfProblemsSolved: 1 } } : {})
+                }
+            ),
+            ...(verdict === "Accepted" 
+                ? [Problem.findByIdAndUpdate(
+                    problemId,
+                    { $push: { solutions: submission._id } }
+                  )]
+                : []
+            )
+        ]);
+
+        return res.status(200).json({
+            success: verdict === "Accepted",
+            verdict,
+            message: verdict === "Accepted" 
+                ? "All test cases passed!" 
+                : `Failed at test case ${failedTestCase}`,
+            submissionId: submission._id,
+            executionTime: maxExecutionTime,
+            totalTime: totalExecutionTime,
+            failedTestCase: failedTestCase
+        });
+
+    } catch (error) {
+        console.error("Error in submission:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error while processing submission",
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
 
 module.exports = {
     handleRunCode,
+    handleSubmitCode,
 };

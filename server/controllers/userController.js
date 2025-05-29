@@ -1,4 +1,5 @@
 const User = require("../models/userDB");
+const Submission = require("../models/submissionDB");
 
 const handleCheckAuthStatus = async (req, res) => {
     try {
@@ -147,6 +148,46 @@ const handleLogout = async (req, res) => {
     }
 }
 
+const handleViewSubmissions = async (req, res) => {
+    const { id } = req.user;
+    try {
+        const user = await User.findById(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+        const submissions = await Submission.find({ user: id })
+            .populate({
+                path: 'problem',
+                select: 'name difficulty',
+            })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        const formattedSubmissions = submissions.map(submission => ({
+            _id: submission._id,
+            createdAt: submission.createdAt,
+            problemName: submission.problem?.name || 'Unknown Problem',
+            code: submission.code,
+            language: submission.language,
+            verdict: submission.verdict,
+            executionTime: submission.executionTime,
+            memoryUsed: submission.memoryUsed || 0,
+            score: submission.score,
+            difficulty: submission.problem?.difficulty || 'Unknown',
+            failedTestCase: submission.failedTestCase || 0
+        }));
+
+        return res.status(200).json({ 
+            success: true, 
+            submissions: formattedSubmissions 
+        });
+    }
+    catch (error) {
+        console.error("Error fetching submissions:", error);
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+}
+
 module.exports = {
     handleCheckAuthStatus,
     handleUserSignUp,
@@ -155,5 +196,6 @@ module.exports = {
     handleGetUserById,
     handleUpdateUser,
     handleDeleteUser,
-    handleLogout
+    handleLogout,
+    handleViewSubmissions
 };

@@ -41,7 +41,7 @@ const problemSchema = new mongoose.Schema(
             trim: true,
         },
         testCases: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TestCase' }],
-        solutions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Solution' }],
+        solutions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Submission' }],
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',

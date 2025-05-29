@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ViewProblem = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const problemId = location.state?.problemId;
 
   const [problem, setProblem] = useState("");
@@ -46,14 +47,31 @@ const ViewProblem = () => {
     fetchProblem();
   }, []);
 
+  const handleSubmit = () => {
+    navigate('/submit', { 
+      state: { 
+        problemId: problemId,
+        problemName: problem.name 
+      } 
+    });
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 to-purple-200">
       {/* <Toaster richColors position="top-center" /> */}
       <div className="bg-white mt-3 mb-3 rounded-xl shadow-lg p-4 flex flex-col w-full max-w-3xl">
         <>
-          <h1 className="text-2xl font-bold mb-2 text-purple-700 text-center">
-            {problem.name}
-          </h1>
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-2xl font-bold text-purple-700">
+              {problem.name}
+            </h1>
+            <button
+              onClick={handleSubmit}
+              className="hover:cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-lg font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+            >
+              Submit Solution
+            </button>
+          </div>
           <div className="mb-1 flex items-center gap-2">
             <span className="font-semibold text-gray-700">Rating:</span>
             <span className="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-0.5 rounded">

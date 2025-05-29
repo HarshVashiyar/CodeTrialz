@@ -21,10 +21,6 @@ const Addproblem = () => {
       setError("Please fill all the fields.");
       return;
     }
-    // console.log(name);
-    // console.log(difficulty);
-    // console.log(tagsArr);
-    // console.log(statement);
     setError("");
     setLoading(true);
     const toastId = toast.loading("Adding problem...");

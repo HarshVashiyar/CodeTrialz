@@ -104,7 +104,6 @@ const handleVerifyProblems = async (req, res) => {
         return res.status(400).json({ success: false, message: "Please Select Problems to verify" });
     }
     try {
-        // Get all problems with their createdBy field
         const problems = await Problem.find({ _id: { $in: problemIds } });
         
         // Group problems by creator
@@ -116,7 +115,6 @@ const handleVerifyProblems = async (req, res) => {
             return acc;
         }, {});
 
-        // Update each creator's problemsCreated array
         for (const [creatorId, createdProblemIds] of Object.entries(problemsByCreator)) {
             await User.findByIdAndUpdate(
                 creatorId,
@@ -124,7 +122,6 @@ const handleVerifyProblems = async (req, res) => {
             );
         }
 
-        // Mark problems as verified
         await Problem.updateMany(
             { _id: { $in: problemIds } },
             { $set: { verified: true } }
@@ -169,6 +166,39 @@ const handleGetUnverifiedProblems = async (req, res) => {
     }
 };
 
+const handleGetSolutions = async (req, res) => {
+    const { problemId } = req.query;
+    if (!problemId) {
+        return res.status(400).json({ success: false, message: "Problem ID is required." });
+    }
+    try {
+        const problem = await Problem.findById(problemId)
+            .populate({
+                path: 'solutions',
+                populate: {
+                    path: 'user',
+                    select: 'fullName'
+                }
+            })
+            .select('name difficulty solutions');
+        if (!problem) {
+            return res.status(404).json({ success: false, message: "No solutions found." });
+        }
+        return res.status(200).json({
+            success: true,
+            solutions: {
+                solutions: problem.solutions,
+                problemName: problem.name,
+                difficulty: problem.difficulty,
+                submittedBy: problem.solutions.map(solution => solution.user.fullName)
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching solutions:', error);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+};
+
 module.exports = {
     handleGetAllProblems,
     handleGetProblemById,
@@ -176,5 +206,6 @@ module.exports = {
     handleAddTestCase,
     handleVerifyProblems,
     handleDeleteProblems,
-    handleGetUnverifiedProblems
+    handleGetUnverifiedProblems,
+    handleGetSolutions
 };

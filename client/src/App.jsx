@@ -15,6 +15,9 @@ import Addproblem from "./Pages/Addproblem";
 import Addtestcase from "./Pages/Addtestcase";
 import ViewProblem from "./Pages/Viewproblem";
 import Admin from "./Pages/Admin";
+import Submit from "./Pages/Submit";
+import Submissions from "./Pages/Submissions";
+import ViewSolutions from "./Pages/ViewSolutions";
 
 function App() {
   return (
@@ -34,6 +37,9 @@ function App() {
           <Route path="/addtestcase" element={<Addtestcase />} />
           <Route path="/viewproblem" element={<ViewProblem />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/submit" element={<Submit />} />
+          <Route path="/submissions" element={<Submissions />} />
+          <Route path="/viewsolutions" element={<ViewSolutions />} />
         </Routes>
         {/* <Toaster position="top-right" richColors /> */}
       </div>

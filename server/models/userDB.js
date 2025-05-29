@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema(
         },
         submissions: {
             type: [mongoose.Schema.Types.ObjectId],
-            ref: 'Solution',
+            ref: 'Submission',
             required: true,
             default: [],
         },

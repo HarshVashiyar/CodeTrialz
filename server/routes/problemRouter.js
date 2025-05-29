@@ -7,7 +7,8 @@ const {
     handleAddTestCase,
     handleVerifyProblems,
     handleDeleteProblems,
-    handleGetUnverifiedProblems
+    handleGetUnverifiedProblems,
+    handleGetSolutions
 } = require("../controllers/problemController");
 const { authenticateUser, authorizeAdmin } = require('../utilities/userUtil');
 
@@ -28,5 +29,7 @@ app.patch('/verify', authenticateUser, authorizeAdmin, handleVerifyProblems);
 app.delete('/delete', authenticateUser, authorizeAdmin, handleDeleteProblems);
 
 app.get('/getunverified', authenticateUser, authorizeAdmin, handleGetUnverifiedProblems);
+
+app.get('/getsolutions', authenticateUser, handleGetSolutions);
 
 module.exports = app;

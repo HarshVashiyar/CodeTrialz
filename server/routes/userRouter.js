@@ -10,6 +10,7 @@ const {
   handleUpdateUser,
   handleDeleteUser,
   handleLogout,
+  handleViewSubmissions,
 } = require("../controllers/userController");
 
 const { 
@@ -37,5 +38,7 @@ app.put("/updateuser", authenticateUser, handleUpdateUser);
 app.delete("/deleteuser", authenticateUser, handleDeleteUser);
 
 app.post("/logout", authenticateUser, handleLogout);
+
+app.get("/viewsubmissions", authenticateUser, handleViewSubmissions);
 
 module.exports = app;

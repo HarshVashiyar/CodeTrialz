@@ -89,7 +89,7 @@ const Compiler = () => {
           <div className="mb-4 flex items-center gap-4">
             <label className="font-semibold text-gray-700">Language:</label>
             <select
-              className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 hover:cursor-pointer"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
@@ -109,9 +109,21 @@ const Compiler = () => {
             placeholder="Write your code here"
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = e.target.selectionStart;
+                const end = e.target.selectionEnd;
+                const newCode = code.substring(0, start) + '    ' + code.substring(end);
+                setCode(newCode);
+                setTimeout(() => {
+                  e.target.selectionStart = e.target.selectionEnd = start + 4;
+                }, 0);
+              }
+            }}
           />
           <button
-            className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+            className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition hover:cursor-pointer"
             onClick={handleRun}
           >
             Run Code

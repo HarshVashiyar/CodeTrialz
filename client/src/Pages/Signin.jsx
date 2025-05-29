@@ -100,7 +100,7 @@ const Signin = () => {
           </div>
           <button
             type="submit"
-            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-lg font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm"
+            className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 rounded-lg font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-sm hover:cursor-pointer"
             disabled={isLoading}
           >
             {isLoading ? "Signing In..." : "Sign In"}
