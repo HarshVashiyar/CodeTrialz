@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
 const tagOptions = [
   "arrays",
@@ -26,6 +27,8 @@ const gradientBorder =
 
 const Home = () => {
   const navigate = useNavigate();
+  const isFirstMount = useRef(true);
+  const { isAuthenticated } = useAuth();
 
   const [problems, setProblems] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
@@ -36,6 +39,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProblems = async () => {
+      console.log(isAuthenticated);
       setLoading(true);
       const toastId = toast.loading("Loading problems...");
       try {
@@ -47,12 +51,19 @@ const Home = () => {
         if (response.data?.success) {
           setProblems(response.data.problems);
           setFilteredProblems(response.data.problems);
-          toast.success("Welcome to the home page!");
-        } else {
+          if (isFirstMount.current) {
+            toast.success("Welcome to the home page!");
+            isFirstMount.current = false;
+          }
+        } else if (isFirstMount.current) {
           toast.error("Failed to load problems.");
+          isFirstMount.current = false;
         }
       } catch (err) {
-        toast.error("Something went wrong!");
+        if (isFirstMount.current) {
+          toast.error("Something went wrong!");
+          isFirstMount.current = false;
+        }
       } finally {
         setLoading(false);
         toast.dismiss(toastId);
@@ -88,7 +99,7 @@ const Home = () => {
   };
 
   const handleViewProblem = (problemId) => {
-    navigate("/viewproblem", { state: { problemId } });
+    navigate(`/problemsolver`, { state: { problemId } });
   };
 
   const handleViewSolutions = (problemId) => {
@@ -107,20 +118,15 @@ const Home = () => {
             <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600 drop-shadow-sm">
               Problem List
             </h1>
-            <div className="flex gap-3">
-              <button
-                onClick={() => navigate("/compiler")}
-                className="hover:cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-purple-400"
-              >
-                Compiler
-              </button>
-              <button
-                onClick={() => navigate("/addproblem")}
-                className="hover:cursor-pointer bg-gradient-to-r from-green-500 to-blue-500 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg hover:from-green-600 hover:to-blue-600 transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-green-300"
-              >
-                Add Problem
-              </button>
-            </div>
+            <button
+              onClick={() => navigate("/addproblem")}
+              className={`hover:cursor-pointer bg-gradient-to-r from-green-500 to-blue-500 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-green-300
+                ${!isAuthenticated ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:from-green-600 hover:to-blue-600"}
+              `}
+              disabled={!isAuthenticated}
+            >
+              Add Problem
+            </button>
           </div>
           <div className="flex flex-col md:flex-row gap-6">
             <div className="flex-1">
@@ -255,7 +261,9 @@ const Home = () => {
                     </button>
                     <button
                       onClick={() => handleViewSolutions(problem._id)}
-                      className="bg-gradient-to-r from-blue-600 to-purple-500 hover:from-blue-700 hover:to-purple-600 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300 hover:cursor-pointer"
+                      className={`bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300
+                        ${isAuthenticated ? "hover:from-blue-700 hover:to-purple-600 hover:cursor-pointer" : "opacity-50 cursor-not-allowed pointer-events-none"}
+                      `}
                     >
                       View Solutions
                     </button>

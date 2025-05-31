@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/AuthContext";
 
 const gradientBorder =
   "relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400 before:to-purple-400 before:blur-[2px] before:opacity-60 before:-z-10";
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
+  const isFirstMount = useRef(true);
 
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -27,7 +30,10 @@ const Profile = () => {
           setUser(response.data.user);
           setIsLoading(false);
           toast.dismiss(toastID);
-          toast.success("Welcome to your profile!");
+          if (isFirstMount.current) {
+            toast.success("Welcome to your profile!");
+            isFirstMount.current = false;
+          }
           return;
         }
       } catch (error) {
@@ -38,9 +44,15 @@ const Profile = () => {
           error.response.data &&
           error.response.data.message
         ) {
-          toast.error(error.response.data.message);
+          if (isFirstMount.current) { 
+            toast.error(error.response.data.message);
+            isFirstMount.current = false;
+          }
         } else {
-          toast.error("Something went wrong!");
+          if (isFirstMount.current) {
+            toast.error("Something went wrong!");
+            isFirstMount.current = false;
+          }
         }
         console.error(error);
       }
@@ -65,6 +77,7 @@ const Profile = () => {
         { withCredentials: true }
       );
       toast.dismiss(toastID);
+      logout();
       toast.success("Account deleted successfully!");
       setTimeout(() => {
         navigate("/");
@@ -86,6 +99,7 @@ const Profile = () => {
         { withCredentials: true }
       );
       toast.dismiss(toastID);
+      logout();
       toast.success("Logged out successfully!");
       setTimeout(() => {
         navigate("/");
@@ -147,7 +161,7 @@ const Profile = () => {
                 <div className="text-xl font-bold text-pink-600">
                   {user?.numberOfProblemsSolved ?? 0}
                 </div>
-                <div className="text-xs text-gray-500">Solutions Accepted</div>
+                <div className="text-xs text-gray-500">Problems Solved</div>
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -65,6 +65,8 @@ const CodeModal = ({ isOpen, onClose, code, language }) => {
 
 const Submissions = () => {
   const navigate = useNavigate();
+  const isFirstMount = useRef(true);
+
   const [submissions, setSubmissions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -89,12 +91,16 @@ const Submissions = () => {
         );
         if (response.data?.success) {
           setSubmissions(response.data.submissions);
-          toast.success("Here are your submissions!");
+          if (isFirstMount.current) {
+            toast.success("Here are your submissions!");
+            isFirstMount.current = false;
+          }
         }
       } catch (error) {
-        toast.error(
-          error.response?.data?.message || "Failed to load submissions"
-        );
+        if (isFirstMount.current) {
+          toast.error(error.response?.data?.message || "Failed to load submissions");
+          isFirstMount.current = false;
+        }
         console.error(error);
       } finally {
         setIsLoading(false);

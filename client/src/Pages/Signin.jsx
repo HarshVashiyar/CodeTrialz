@@ -2,12 +2,14 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Toaster, toast } from "sonner";
+import { useAuth } from "../Context/AuthContext";
 
 const gradientBorder =
   "relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400 before:to-purple-400 before:blur-[2px] before:opacity-60 before:-z-10";
 
 const Signin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -36,6 +38,7 @@ const Signin = () => {
       if (response.data?.success === true) {
         toast.dismiss(toastId);
         setIsLoading(false);
+        login();
         toast.success("You're signed in successfully!");
         setTimeout(() => {
           navigate("/profile");

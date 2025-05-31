@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -26,6 +26,7 @@ const gradientBorder =
 
 const Admin = () => {
   const navigate = useNavigate();
+  const isFirstMount = useRef(true);
 
   const [problems, setProblems] = useState([]);
   const [filteredProblems, setFilteredProblems] = useState([]);
@@ -49,12 +50,19 @@ const Admin = () => {
         if (response.data?.success) {
           setProblems(response.data.problems);
           setFilteredProblems(response.data.problems);
-          toast.success("Welcome to the admin panel!");
-        } else {
+          if (isFirstMount.current) {
+            toast.success("Welcome to the admin panel!");
+            isFirstMount.current = false;
+          }
+        } else if (isFirstMount.current) {
           toast.error("Failed to load problems.");
+          isFirstMount.current = false;
         }
       } catch (err) {
-        toast.error("Something went wrong!");
+        if (isFirstMount.current) {
+          toast.error("Something went wrong!");
+          isFirstMount.current = false;
+        }
       } finally {
         setLoading(false);
         toast.dismiss(toastId);

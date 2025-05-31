@@ -1,25 +1,8 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useAuth } from "../Context/AuthContext";
 import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
-  useEffect(() => {
-    const checkAuthStatus = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}${
-            import.meta.env.VITE_CHECK_AUTH_STATUS_URL
-          }`,
-          { withCredentials: true }
-        );
-        setIsAuthenticated(response.data.isAuthenticated);
-      } catch (error) {
-        console.error("Error checking authentication status:", error);
-      }
-    };
-    checkAuthStatus();
-  }, []);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   return (
     <nav className="w-full bg-gradient-to-r from-white/95 to-white/90 backdrop-blur-lg border-b border-gray-200 shadow-[0_8px_32px_-12px_rgba(99,102,241,0.15)] sticky top-0 z-50">

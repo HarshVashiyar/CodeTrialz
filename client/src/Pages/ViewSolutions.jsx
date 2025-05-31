@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -66,7 +66,9 @@ const CodeModal = ({ isOpen, onClose, code, language }) => {
 const ViewSolutions = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isFirstMount = useRef(true);
   const problemId = location.state?.problemId;
+
   const [submissions, setSubmissions] = useState([]);
   const [problemName, setProblemName] = useState("");
   const [problemDifficulty, setProblemDifficulty] = useState(null);
@@ -104,13 +106,20 @@ const ViewSolutions = () => {
           setProblemName(problemName || "Unknown Problem");
           setProblemDifficulty(difficulty);
           setSubmissions(Array.isArray(solutions) ? solutions : []);
-          toast.success("Solutions loaded successfully!");
-        } else {
+          if (isFirstMount.current) {
+            toast.success("Solutions loaded successfully!");
+            isFirstMount.current = false;
+          }
+        } else if (isFirstMount.current) {
           toast.error(response.data?.message || "Failed to load solutions");
+          isFirstMount.current = false;
         }
       } catch (error) {
         console.error("Error fetching solutions:", error);
-        toast.error(error.response?.data?.message || "Something went wrong!");
+        if (isFirstMount.current) {
+          toast.error(error.response?.data?.message || "Something went wrong!");
+          isFirstMount.current = false;
+        }
       } finally {
         setIsLoading(false);
         toast.dismiss(toastId);
