@@ -10,6 +10,8 @@ const Problem = require("../models/problemDB");
 const Submission = require("../models/submissionDB");
 const User = require("../models/userDB");
 const TestCase = require("../models/testCasesDB");
+const { GoogleGenAI } = require("@google/genai");
+const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
 const executeCode = async (language, filePath, inputFilePath) => {
     switch(language.toLowerCase()) {
@@ -172,7 +174,28 @@ const handleSubmitCode = async (req, res) => {
     }
 };
 
+const handleGetSuggestions = async (req, res) => {
+    const { submissionId } = req.body;
+    const submission = await Submission.findById(submissionId);
+    if(submission.verdict !== "Accepted") {
+        return res.json({ success: false, message: "Get your code accepted to unlock ai suggestions"});
+    }
+    const code = submission.code;
+    const response = await ai.models.generateContent({
+        model: "gemini-2.0-flash",
+        contents: [
+            { role: "user", parts: [
+                { text: "Give me suggestions to improve the following code. Keep it point-wise, concise, and return in plain text format without any extra code or remarks like 'better code is'.\n\nCode:\n" + code }
+            ]}
+        ]
+    });
+    const candidates = response.candidates;
+    const suggestions = candidates?.[0]?.content?.parts?.[0]?.text || "Upgrade to pro to get AI suggestions";
+    return res.status(200).json({ success: true, suggestions });
+};
+
 module.exports = {
     handleRunCode,
     handleSubmitCode,
+    handleGetSuggestions,
 };

@@ -6,6 +6,35 @@ import { useNavigate } from "react-router-dom";
 const gradientBorder =
   "relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400 before:to-purple-400 before:blur-[2px] before:opacity-60 before:-z-10";
 
+const SuggestionsModal = ({ isOpen, onClose, suggestions }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+      <div className="bg-white/95 rounded-2xl shadow-2xl w-[90%] max-w-5xl max-h-[85vh] overflow-hidden border border-purple-100">
+        <div className="flex justify-between items-center px-8 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-purple-100">
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700">
+              AI Suggestions
+            </h3>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-red-500 transition-colors duration-200 hover:cursor-pointer focus:outline-none "
+          >
+            X
+          </button>
+        </div>
+        <div className="px-8 py-6 overflow-auto max-h-[65vh] bg-gradient-to-br from-blue-50/50 to-purple-50/50">
+          <pre className="bg-white rounded-xl p-6 overflow-x-auto border border-purple-100 shadow-inner font-mono text-[15px] leading-relaxed text-gray-800">
+            <code className="selection:bg-blue-100">{suggestions}</code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const CodeModal = ({ isOpen, onClose, code, language }) => {
   if (!isOpen) return null;
 
@@ -36,21 +65,9 @@ const CodeModal = ({ isOpen, onClose, code, language }) => {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-red-500 transition-colors duration-200 hover:cursor-pointer focus:outline-none hover:rotate-90 transform"
+            className="text-gray-400 hover:text-red-500 transition-colors duration-200 hover:cursor-pointer focus:outline-none "
           >
-            <svg
-              className="h-7 w-7"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            X
           </button>
         </div>
         <div className="px-8 py-6 overflow-auto max-h-[65vh] bg-gradient-to-br from-blue-50/50 to-purple-50/50">
@@ -71,6 +88,8 @@ const Submissions = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCode, setSelectedCode] = useState({ code: "", language: "" });
+  const [suggestions, setSuggestions] = useState("");
+  const [suggestionsModalOpen, setSuggestionsModalOpen] = useState(false);
 
   const handleViewCode = (code, language, e) => {
     e.stopPropagation();
@@ -98,7 +117,9 @@ const Submissions = () => {
         }
       } catch (error) {
         if (isFirstMount.current) {
-          toast.error(error.response?.data?.message || "Failed to load submissions");
+          toast.error(
+            error.response?.data?.message || "Failed to load submissions"
+          );
           isFirstMount.current = false;
         }
         console.error(error);
@@ -172,6 +193,25 @@ const Submissions = () => {
     }
   };
 
+  const handleGetSuggestions = async (submissionId) => {
+    const toastId = toast.loading("Getting suggestions...");
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_GET_SUGGESTIONS_URL}`,
+        { submissionId },
+        { withCredentials: true }
+      );
+      if (response.data?.success === true) {
+        setSuggestions(response.data.suggestions);
+        setSuggestionsModalOpen(true);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-8 px-4">
       <Toaster richColors position="top-center" />
@@ -180,6 +220,11 @@ const Submissions = () => {
         onClose={() => setModalOpen(false)}
         code={selectedCode.code}
         language={selectedCode.language}
+      />
+      <SuggestionsModal
+        isOpen={suggestionsModalOpen}
+        onClose={() => setSuggestionsModalOpen(false)}
+        suggestions={suggestions}
       />
       <div className="max-w-7xl mx-auto">
         <div
@@ -229,8 +274,11 @@ const Submissions = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Code
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  {/* <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Score
+                  </th> */}
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                   Real time AI Suggestion
                   </th>
                 </tr>
               </thead>
@@ -326,7 +374,7 @@ const Submissions = () => {
                           View
                         </button>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      {/* <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`text-sm font-medium ${
                             submission.score > 0
@@ -336,6 +384,15 @@ const Submissions = () => {
                         >
                           {submission.score > 0 ? submission.score : "-"}
                         </span>
+                      </td> */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => handleGetSuggestions(submission._id)}
+                          className="text-blue-600 hover:text-blue-800 hover:underline hover:cursor-pointer text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={submission.verdict !== "Accepted"}
+                        >
+                          View
+                        </button>
                       </td>
                     </tr>
                   ))
