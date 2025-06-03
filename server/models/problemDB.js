@@ -7,7 +7,7 @@ const problemSchema = new mongoose.Schema(
             required: true,
             trim: true,
             minLength: [3, "Problem name should be at least 3 characters long."],
-            maxLength: [20, "Problem name should be at most 20 characters long."],
+            maxLength: [40, "Problem name should be at most 40 characters long."],
             validate: {
                 validator: function (v) {
                     return /^[a-zA-Z\s0-9]+$/.test(v);

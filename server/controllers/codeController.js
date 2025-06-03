@@ -1,58 +1,49 @@
-const {
-    generateFile,
-    generateInputFile,
-    executeCpp,
-    executePython,
-    executeJavaScript,
-    executeJava,
-} = require("../utilities/codeUtil");
 const Problem = require("../models/problemDB");
 const Submission = require("../models/submissionDB");
 const User = require("../models/userDB");
 const TestCase = require("../models/testCasesDB");
 const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
-
-const executeCode = async (language, filePath, inputFilePath) => {
-    switch(language.toLowerCase()) {
-        case "cpp":
-            return await executeCpp(filePath, inputFilePath);
-        case "python":
-            return await executePython(filePath, inputFilePath);
-        case "javascript":
-            return await executeJavaScript(filePath, inputFilePath);
-        case "java":
-            return await executeJava(filePath, inputFilePath);
-        default:
-            throw new Error("Unsupported language");
-    }
-};
+const CODE_BACKEND_URL = process.env.CODEBACKEND_URL || "http://localhost:8080/exec";
+const fetch = require("node-fetch");
 
 const handleRunCode = async (req, res) => {
     const { language = "cpp", code, input = "" } = req.body;
-    if(code === undefined) {
+    const { id } = req.user;
+    if (!id) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+    if (code === undefined || code === null || code.trim() === "") {
         return res.status(400).json({ success: false, message: "Code is required" });
     }
+    
     try {
-        const filePath = generateFile({ code, language });
-        const inputFilePath = generateInputFile(input);
-        if (!filePath) {
-            return res.status(500).json({ success: false, message: "Failed to generate file" });
+        const response = await fetch(`${CODE_BACKEND_URL}/run`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ language, code, input })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+            return res.status(response.status).json({
+                success: false,
+                type: result.type || "internal_error",
+                message: result.message || "Code execution failed"
+            });
         }
-        const output = await executeCode(language, filePath, inputFilePath);
-        return res.status(200).json({ success: true, output });
-    }
-    catch (error) {
-        console.error("Error running code:", error);
-        let statusCode = 500;
-        let errorType = error.type || "internal_error";
-        let errorMessage = error.message || "Internal server error";
-
-        if (errorType === "compile_error") statusCode = 400;
-        else if (errorType === "runtime_error") statusCode = 400;
-        else if (errorType === "time_limit_exceeded") statusCode = 408;
-
-        return res.status(statusCode).json({ success: false, type: errorType, message: errorMessage });
+        return res.status(200).json({
+            success: true,
+            output: result.output
+        });
+    } catch (error) {
+        console.error("Error communicating with code execution service:", error);
+        return res.status(500).json({
+            success: false,
+            type: "internal_error",
+            message: "Failed to connect to code execution service"
+        });
     }
 };
 
@@ -84,36 +75,22 @@ const handleSubmitCode = async (req, res) => {
             });
         }
 
-        const filePath = generateFile({ code, language });
-        const executionStartTime = Date.now();
-        let maxExecutionTime = 0;
-        let verdict = "Accepted";
-        let failedTestCase = 0;
-
-        for (const [index, testCase] of testCases.entries()) {
-            try {
-                const inputFilePath = generateInputFile(testCase.input);
-                const testCaseStartTime = Date.now();
-                
-                const output = await executeCode(language, filePath, inputFilePath);
-                const testCaseExecutionTime = Date.now() - testCaseStartTime;
-                maxExecutionTime = Math.max(maxExecutionTime, testCaseExecutionTime);
-
-                if (output.trim() !== testCase.output.trim()) {
-                    verdict = "Wrong Answer";
-                    failedTestCase = index + 1;
-                    break;
-                }
-            } catch (error) {
-                verdict = error.type === "compile_error" ? "Compilation Error" :
-                         error.type === "time_limit_exceeded" ? "Time Limit Exceeded" :
-                         "Runtime Error";
-                failedTestCase = index + 1;
-                break;
-            }
+        const response = await fetch(`${CODE_BACKEND_URL}/submit`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ testCases, language, code })
+        });
+        const result = await response.json();
+        if (!response.ok) {
+            return res.status(response.status).json({
+                success: false,
+                type: result.type || "internal_error",
+                message: result.message || "Code execution failed"
+            });
         }
-
-        const totalExecutionTime = Date.now() - executionStartTime;
+        const { verdict, maxExecutionTime, totalExecutionTime, failedTestCase } = result;
 
         const hasAlreadySolved = await Submission.findOne({
             problem: problemId,
@@ -181,17 +158,29 @@ const handleGetSuggestions = async (req, res) => {
         return res.json({ success: false, message: "Get your code accepted to unlock ai suggestions"});
     }
     const code = submission.code;
-    const response = await ai.models.generateContent({
-        model: "gemini-2.0-flash",
-        contents: [
-            { role: "user", parts: [
-                { text: "Give me suggestions to improve the following code. Keep it point-wise, concise, and return in plain text format without any extra code or remarks like 'better code is'.\n\nCode:\n" + code }
-            ]}
-        ]
-    });
-    const candidates = response.candidates;
-    const suggestions = candidates?.[0]?.content?.parts?.[0]?.text || "Upgrade to pro to get AI suggestions";
-    return res.status(200).json({ success: true, suggestions });
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash",
+            contents: [
+                { role: "user", parts: [
+                    { text: "Give point-wise, concise suggestions to improve the following code. Return in plain text format only—no extra remarks or commentary. At the end, include the improved version of the code. Code: " + code }
+                ]}
+            ]
+        });
+        const candidates = response.candidates;
+        const suggestions = candidates?.[0]?.content?.parts?.[0]?.text || "Upgrade to pro to get AI suggestions";
+        return res.status(200).json({ success: true, suggestions });
+    } catch (error) {
+        console.error("Error generating suggestions:", error);
+        if (
+            error.message &&
+            error.message.includes("503") &&
+            error.message.includes("The model is overloaded")
+          ) {
+            return res.status(503).json({ success: false, message: "Service temporarily unavailable. Please try again in a few seconds." });
+        }
+        return res.status(500).json({ success: false, message: "Internal server error while generating suggestions" });
+    }
 };
 
 module.exports = {

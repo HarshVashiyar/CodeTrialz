@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Toaster, toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const gradientBorder =
   "relative before:absolute before:inset-0 before:rounded-2xl before:bg-gradient-to-br before:from-blue-400 before:to-purple-400 before:blur-[2px] before:opacity-60 before:-z-10";
@@ -83,6 +83,9 @@ const CodeModal = ({ isOpen, onClose, code, language }) => {
 const Submissions = () => {
   const navigate = useNavigate();
   const isFirstMount = useRef(true);
+  const location = useLocation();
+  const previousPath = location.state?.previousPath || "/";
+  const problemId = location.state?.problemId || null;
 
   const [submissions, setSubmissions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -194,10 +197,12 @@ const Submissions = () => {
   };
 
   const handleGetSuggestions = async (submissionId) => {
-    const toastId = toast.loading("Getting suggestions...");
+    const toastId = toast.loading("Prompting AI for suggestions...");
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_GET_SUGGESTIONS_URL}`,
+        `${import.meta.env.VITE_BASE_URL}${
+          import.meta.env.VITE_GET_SUGGESTIONS_URL
+        }`,
         { submissionId },
         { withCredentials: true }
       );
@@ -206,6 +211,9 @@ const Submissions = () => {
         setSuggestionsModalOpen(true);
       }
     } catch (error) {
+      if(error.response.data.success === false) {
+        toast.error(error.response.data.message);
+      }
       console.error(error);
     } finally {
       toast.dismiss(toastId);
@@ -234,12 +242,20 @@ const Submissions = () => {
             <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600">
               My Submissions
             </h1>
-            <button
-              onClick={() => navigate("/")}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:cursor-pointer"
-            >
-              Solve Problems
-            </button>
+            <div className="flex gap-4 ml-auto">
+              <button
+                onClick={() => navigate("/")}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:cursor-pointer"
+              >
+                Solve Problems
+              </button>
+              <button
+                onClick={() => navigate(previousPath, { state: { problemId } })}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:cursor-pointer"
+              >
+                Back
+              </button>
+            </div>
           </div>
         </div>
 
@@ -278,7 +294,7 @@ const Submissions = () => {
                     Score
                   </th> */}
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                   Real time AI Suggestion
+                    Real time AI Suggestion
                   </th>
                 </tr>
               </thead>

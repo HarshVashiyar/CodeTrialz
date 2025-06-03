@@ -200,7 +200,7 @@ const Profile = () => {
 
             <div className="flex flex-col gap-3 w-full">
               <button
-                onClick={() => navigate("/submissions")}
+                onClick={() => navigate("/submissions", { state: { previousPath: "/profile" } })}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 tracking-wide focus:outline-none focus:ring-2 focus:ring-purple-400 hover:cursor-pointer"
               >
                 View My Submissions

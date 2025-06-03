@@ -69,10 +69,6 @@ const ProblemSolver = () => {
 
   const handleRun = async (e) => {
     e.preventDefault();
-    if (!code || code.trim() === "") {
-      setError("Please enter some code to run.");
-      return;
-    }
     if(isRunning) return;
     setIsRunning(true);
     setOutput("");
@@ -159,7 +155,7 @@ const ProblemSolver = () => {
       setIsSubmitting(false);
       toast.dismiss(toastId);
       setTimeout(() => {
-        navigate("/submissions");
+        navigate("/submissions", { state: { previousPath: "/problemsolver", problemId: problemId } });
       }, 700);
     }
   };

@@ -14,6 +14,41 @@ const tagOptions = [
   "binary search",
   "sorting",
   "recursion",
+  "implementation",
+  "brute force",
+  "constructive algorithms",
+  "data structures",
+  "dfs",
+  "bfs",
+  "number theory",
+  "combinatorics",
+  "geometry",
+  "bit manipulation",
+  "two pointers",
+  "disjoint set union",
+  "shortest paths",
+  "probabilities",
+  "divide and conquer",
+  "hashing",
+  "interactive",
+  "fft",
+  "chinese remainder theorem",
+  "linked list",
+  "trie",
+  "sliding window",
+  "backtracking",
+  "heap",
+  "stack",
+  "memoization",
+  "topological sort",
+  "monotonic stack",
+  "segment tree",
+  "suffix array",
+  "minimum spanning tree",
+  "strongly connected components",
+  "game theory",
+  "simulation",
+  "bitmask",
 ];
 
 const difficultyOptions = Array.from(
@@ -203,7 +238,7 @@ const Admin = () => {
               <span className="block text-purple-700 font-semibold mb-1 text-sm">
                 Tags
               </span>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-scroll">
                 {tagOptions.map((tag) => (
                   <label
                     key={tag}

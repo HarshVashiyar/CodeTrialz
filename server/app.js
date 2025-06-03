@@ -5,7 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const PORT = 8090 || process.env.PORT;
-const MONGO_URI = '' || process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI || '';
 const staticRouter = require('./routes/staticRouter');
 
 app.use(cors({
