@@ -4,7 +4,7 @@ const User = require("../models/userDB");
 const TestCase = require("../models/testCasesDB");
 const { GoogleGenAI } = require("@google/genai");
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
-const CODE_BACKEND_URL = process.env.CODEBACKEND_URL || "http://localhost:8080/exec";
+const CODE_BACKEND_URL = process.env.CODE_BACKEND_URL || "http://localhost:8080/exec";
 const fetch = require("node-fetch");
 
 const handleRunCode = async (req, res) => {

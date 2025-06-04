@@ -1,7 +1,7 @@
+CodeBackEnd/
 node_modules
-*.env
-codes/
-inputs/
-outputs/
+.env
+.gitignore
+.git
 dockerfile
 .dockerignore
