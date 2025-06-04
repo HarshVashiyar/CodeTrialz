@@ -9,7 +9,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between h-16">
         <NavLink to="/" className="flex items-center gap-2 group">
           <span className="text-2xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600 tracking-tight drop-shadow hover:scale-105 transition-transform duration-200">
-            The OJ Project
+            CodeTrialz
           </span>
         </NavLink>
         <div className="flex items-center gap-8">
