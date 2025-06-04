@@ -1,20 +1,17 @@
-# Use official Node.js image
-FROM node:18-alpine
+FROM node:23-alpine
 
-# Set working directory
+# Install required tools for multi-language support
+RUN apk add --no-cache python3 openjdk17 g++
+
 WORKDIR /app
 
-# Copy package files first (to cache dependencies)
+# Copy and install dependencies
 COPY package*.json ./
-
-# Install dependencies
 RUN npm install --only=production
 
-# Copy rest of the code
+# Copy application code
 COPY . .
 
-# Expose the port (change if needed)
 EXPOSE 8080
 
-# Start the code execution server
 CMD ["node", "app.js"]
