@@ -6,10 +6,17 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const PORT = 8090 || process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI || '';
+const FRONT_END_URI = process.env.FRONT_END_URI.split(',') || ['http://localhost:5173'];
 const staticRouter = require('./routes/staticRouter');
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://host.docker.internal:5173'],
+    origin: function (origin, callback) {
+        if (!origin || FRONT_END_URI.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
 }));
