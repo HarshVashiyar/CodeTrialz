@@ -18,34 +18,29 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 
 ## 📦 Features
 
-### 👤 Authentication & Authorization
-- Secure user registration and login via **JWT** and **bcrypt**
-- Roles: `user`, `admin`
-- Email verification and protected routes
+### User Authentication
+Users can register using a valid email ID, which also allows them to securely reset their password if needed.
 
-### 📘 Problem Management
-- Upload coding problems with multiple test cases
-- Problems and test cases are first **verified by admins**
+### Session Management
+Upon signing in, users are assigned secure cookies to maintain their session.
 
-### 🧑‍💻 Code Execution & Submission
-- Users can run and submit code in:
-  - ✅ C++
-  - ✅ JavaScript
-  - ✅ Java
-  - ✅ Python
-- Code is run in a **sandboxed Docker container**
-- Submissions are evaluated against test cases
+### Challenge Creation
+Authenticated users can create new coding problems and attach multiple custom test cases to each.
 
-### 📚 Submissions & Leaderboard
-- View personal submission history
-- View accepted solutions by others
-- Leaderboard and user progress
+### Admin Verification
+All submitted problems and test cases undergo an admin review process before being made publicly available.
 
-### 🤖 AI Suggestions
-- On successful submissions, get **AI-generated suggestions**
-  - Code improvements
-  - Time and space optimizations
-  - Best practices 
+### Code Submission Interface
+Users can browse verified problems and solve them using an integrated code editor that supports four languages — C++, Python, JavaScript, and Java.
+
+### Secure Execution
+Code is executed inside isolated containers and automatically evaluated against the provided test cases.
+
+### AI Suggestions
+If a solution is accepted, users receive real-time AI-powered suggestions to enhance their code quality.
+
+### User Profiles
+Each user has a profile page where they can view their submission history and other details.
 
 <!-- ## 📸 Screenshots
 
