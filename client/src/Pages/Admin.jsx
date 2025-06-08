@@ -133,7 +133,7 @@ const Admin = () => {
   };
 
   const handleViewProblem = (problemId) => {
-    navigate("/viewproblem", { state: { problemId } });
+    navigate("/viewproblem", { state: { problemId, previousPage: location.pathname } });
   };
 
   const handleSelectProblem = (problemId) => {

@@ -10,6 +10,7 @@ const ViewProblem = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const problemId = location.state?.problemId;
+  const previousPage = location.state?.previousPage;
 
   const [problem, setProblem] = useState("");
   const [error, setError] = useState("");
@@ -51,14 +52,14 @@ const ViewProblem = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleSubmit = () => {
-    navigate("/submit", {
-      state: {
-        problemId: problemId,
-        problemName: problem.name,
-      },
-    });
-  };
+  // const handleSubmit = () => {
+  //   navigate("/submit", {
+  //     state: {
+  //       problemId: problemId,
+  //       problemName: problem.name,
+  //     },
+  //   });
+  // };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
@@ -90,17 +91,17 @@ const ViewProblem = () => {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => navigate("/")}
+                onClick={() => navigate(previousPage || "/")}
                 className="hover:cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-purple-400"
               >
                 Back
               </button>
-              <button
+              {/* <button
                 onClick={handleSubmit}
                 className="hover:cursor-pointer bg-gradient-to-r from-blue-600 to-purple-600 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-purple-400"
               >
                 Submit Solution
-              </button>
+              </button> */}
             </div>
           </div>
 
