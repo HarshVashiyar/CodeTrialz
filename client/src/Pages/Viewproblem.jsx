@@ -150,7 +150,7 @@ const ViewProblem = () => {
             {problem.testCases && problem.testCases.length > 0 ? (
               <>
                 <ul className="space-y-4">
-                  {problem.testCases.slice(0, 2).map((tc, idx) => (
+                  {problem.testCases.map((tc, idx) => (
                     <li
                       key={idx}
                       className="bg-gradient-to-br from-gray-50 to-purple-50 border border-purple-100 rounded-lg p-4 shadow-inner"
@@ -174,11 +174,6 @@ const ViewProblem = () => {
                     </li>
                   ))}
                 </ul>
-                {problem.testCases.length > 2 && (
-                  <p className="text-gray-500 text-sm mt-3 italic text-center">
-                    + {problem.testCases.length - 2} more test cases...
-                  </p>
-                )}
               </>
             ) : (
               <p className="text-gray-400 text-base text-center mt-2">

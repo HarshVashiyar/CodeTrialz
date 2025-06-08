@@ -248,7 +248,7 @@ const ProblemSolver = () => {
               </div>
             ) : (
               <div className="space-y-4">
-                {problem.testCases?.map((tc, idx) => (
+                {problem.testCases?.slice(0, 2).map((tc, idx) => (
                   <div key={idx} className="bg-gradient-to-br from-gray-50 to-purple-50 border border-purple-100 rounded-lg p-4 shadow-inner">
                     <div className="mb-2">
                       <span className="font-semibold text-blue-700">Input:</span>
@@ -264,6 +264,11 @@ const ProblemSolver = () => {
                     </div>
                   </div>
                 ))}
+                {problem.testCases.length > 2 && (
+                  <p className="text-gray-500 text-sm mt-3 italic text-center">
+                    + {problem.testCases.length - 2} more test cases...
+                  </p>
+                )}
               </div>
             )}
           </div>
