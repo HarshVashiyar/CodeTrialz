@@ -9,11 +9,11 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 ## 📋 Table of Contents
 
 - [Features](#features)
-- [Tech Stack](#tech-stack)
 - [Screenshots](#screenshots)
-- [Getting Started](#getting-started)
-- [Environment Variables](#environment-variables)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
 - [Folder Structure](#folder-structure)
+- [Getting Started](#getting-started)
 <!-- - [Contributing](#contributing)
 - [License](#license) -->
 
@@ -48,6 +48,18 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
   - Time and space optimizations
   - Best practices 
 
+## 📸 Screenshots
+
+| Feature | Screenshot |
+|--------|------------|
+| Home Page | ![home](screenshots/home_page.png) |
+| Add Problem | ![add problem](screenshots/add_problem_page.png) |
+| Add Test Cases | ![testcase](screenshots/add_test_cases_page.png) |
+| Admin Panel | ![admin](screenshots/admin_page.png) |
+| Code Editor | ![editor](screenshots/editor_page.png) |
+| Profile Page | ![profile](screenshots/profile_page.png) |
+| Submission History | ![submissions](screenshots/submissions_page.png) |
+
 ## 🛠️ Tech Stack
 
 ### 🧑🏻‍💻 Frontend
@@ -63,15 +75,19 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 - [Node.js](https://nodejs.org/en)
 - [Express](https://expressjs.com/)
 - [MongoDB](https://www.mongodb.com/) (via [Mongoose](https://www.npmjs.com/package/mongoose))
-- [JWT](https://jwt.io/) Auth + [Bcrypt](https://www.npmjs.com/package/bcrypt) hashing for password security
+- [Cors](https://www.npmjs.com/package/cors) + [dotenv](https://www.npmjs.com/package/dotenv) for handling cross site requests and accessing environment variables.
+- [Bcrypt](https://www.npmjs.com/package/bcrypt) hashing for password security
+- [JWT](https://jwt.io/) + [cookie-parser](https://www.npmjs.com/package/cookie-parser) for cookies functionality
 - Email support via [Nodemailer](https://www.npmjs.com/package/nodemailer)
+- [Google Gemini GenAi](https://ai.google.dev/)
 - [Docker](https://www.docker.com/) container on [AWS](https://aws.amazon.com/) [EC2](https://aws.amazon.com/ec2/)
 
 ### 🚚 Code Execution Microservice
 
 - [Node.js](https://nodejs.org/en)
 - [Express](https://expressjs.com/)
-- 
+- [Cors](https://www.npmjs.com/package/cors) + [dotenv](https://www.npmjs.com/package/dotenv) for handling cross site requests and accessing environment variables.
+- [uuid](https://www.npmjs.com/package/uuid) for managing code files
 - Separate [Docker](https://www.docker.com/) container on a different [AWS](https://aws.amazon.com/) [EC2](https://aws.amazon.com/ec2/) instance
 
 ### 🐳 Containerization & Deployment
@@ -90,87 +106,9 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
     - HTTPS/SSL was enabled for the backend APIs using Certbot and Let’s Encrypt:
     - Backend Express servers were configured to serve via HTTPS using the generated SSL certificates.
 
-## 📸 Screenshots
+## 🏛️ Architecture
 
-| Feature | Screenshot |
-|--------|------------|
-| Home Page | ![home](screenshots/home_page.png) |
-| Add Problem | ![add problem](screenshots/add_problem_page.png) |
-| Add Test Cases | ![testcase](screenshots/add_test_cases_page.png) |
-| Admin Panel | ![admin](screenshots/admin_page.png) |
-| Code Editor | ![editor](screenshots/editor_page.png) |
-| Profile Page | ![profile](screenshots/profile_page.png) |
-| Submission History | ![submissions](screenshots/submissions_page.png) |
-
-## 🚀 Getting Started
-
-### 🔗 Clone & Install
-
-```bash
-# Clone repo
-git clone https://github.com/HarshVashiyar/CodeTrialz.git
-cd CodeTrialz
-
-# Backend
-cd server
-npm install
-cp .env.example .env
-npm run dev
-
-# Code Execution Service
-cd CodeBackEnd
-npm install
-cp .env.example .env
-npm run dev
-
-# Frontend
-cd ../../client
-npm install
-npm run dev
-```
-
-## 🌳Environemnt Variables
-
-```
-client/src/.env:
-VITE_BASE_URL=https://oj-backend.harshvashiyar.in/api/
-VITE_CHECK_AUTH_STATUS_URL=user/checkauth
-VITE_USER_SIGNUP_URL=user/signup
-VITE_USER_SIGNIN_URL=user/signin
-VITE_SEND_OTP_URL=email/sendotp
-VITE_VERIFY_OTP_URL=email/verifyotp
-VITE_RESET_PASSWORD_URL=email/resetpassword
-VITE_USER_PROFILE_URL=user/getuser
-VITE_USER_UPDATE_URL=user/updateuser
-VITE_USER_DELETE_URL=user/deleteuser
-VITE_USER_LOGOUT_URL=user/logout
-VITE_RUN_CODE_URL=code/run
-VITE_ADD_PROBLEM_URL=problem/addproblem
-VITE_ADD_TESTCASE_URL=problem/addtestcase
-VITE_VIEW_PROBLEM_URL=problem/get
-VITE_LIST_PROBLEMS_URL=problem/getall
-VITE_GET_UNVERIFIED_PROBLEMS_URL=problem/getunverified
-VITE_REMOVE_PROBLEMS_URL=problem/delete
-VITE_VERIFY_PROBLEMS_URL=problem/verify
-VITE_SUBMIT_CODE_URL=code/submit
-VITE_VIEW_SUBMISSIONS_URL=user/viewsubmissions
-VITE_GET_SOLUTIONS_URL=problem/getsolutions
-VITE_GET_SUGGESTIONS_URL=code/suggestions
-
-server/.env:
-PORT=8090
-MONGO_URI=your_mongodb_uri
-JWT_SECRET_KEY=your_secret_key
-ADMIN_EMAIL=your_service_email
-ADMIN_EMAIL_PASSWORD=your_email_api_key
-GOOGLE_API_KEY=your_gemini_api_key
-CODE_BACKEND_URL=link_to_microservice_backend_ec2_instance
-FRONT_END_URI=links_to_frontend_deployed_url
-
-server/CodeBackEnd/.env:
-PORT=8080
-GENERAL_BACKEND_URI=link_to_general_backend_ec2_instance
-```
+![Architecture](screenshots/code-trialz-architecture.png)
 
 ## 📁 Folder Structure
 
@@ -204,4 +142,31 @@ CodeTrialz/
 │   ├── .env                    # General API environment variables
 │   ├── Dockerfile              # Dockerfile for General API
 │   └── .dockerignore
+```
+
+## 🚀 Getting Started
+
+### 🔗 Clone & Install
+
+```bash
+# Clone repo
+git clone https://github.com/HarshVashiyar/CodeTrialz.git
+cd CodeTrialz
+
+# Backend
+cd server
+npm install
+cp .env.example .env
+npm run dev
+
+# Code Execution Service
+cd CodeBackEnd
+npm install
+cp .env.example .env
+npm run dev
+
+# Frontend
+cd ../../client
+npm install
+npm run dev
 ```
