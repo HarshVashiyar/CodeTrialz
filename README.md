@@ -9,7 +9,6 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 ## 📋 Table of Contents
 
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
 - [Folder Structure](#folder-structure)
@@ -48,7 +47,7 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
   - Time and space optimizations
   - Best practices 
 
-## 📸 Screenshots
+<!-- ## 📸 Screenshots
 
 | Feature | Screenshot |
 |--------|------------|
@@ -58,7 +57,7 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 | Admin Panel | ![admin](screenshots/admin_page.png) |
 | Code Editor | ![editor](screenshots/editor_page.png) |
 | Profile Page | ![profile](screenshots/profile_page.png) |
-| Submission History | ![submissions](screenshots/submissions_page.png) |
+| Submission History | ![submissions](screenshots/submissions_page.png) | -->
 
 ## 🛠️ Tech Stack
 
