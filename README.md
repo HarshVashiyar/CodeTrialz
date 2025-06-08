@@ -107,7 +107,7 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 
 ## 🏛️ Architecture
 
-![Architecture](screenshots/code-trialz-architecture.png)
+[View In Canva](https://www.canva.com/design/DAGpwSHIplw/y4fJZKZJBZyTo17YCCJ5Qg/view?utm_content=DAGpwSHIplw&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h04df009fc3)
 
 ## 📁 Folder Structure
 
