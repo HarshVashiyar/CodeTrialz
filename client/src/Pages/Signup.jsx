@@ -11,7 +11,7 @@ const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [dob, setDob] = useState("");
+  // const [dob, setDob] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,11 +45,7 @@ const Signup = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error?.response?.data?.message) {
         toast.dismiss(toastId);
         toast.error(error.response.data.message);
       } else {
@@ -127,7 +123,7 @@ const Signup = () => {
               />
             </div>
 
-            <div>
+            {/* <div>
               <label className="block text-gray-700 mb-1 font-semibold text-sm">
                 Date of Birth
               </label>
@@ -138,7 +134,7 @@ const Signup = () => {
                 onChange={(e) => setDob(e.target.value)}
                 disabled={isLoading}
               />
-            </div>
+            </div> */}
 
             <button
               type="submit"

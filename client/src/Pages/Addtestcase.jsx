@@ -70,11 +70,11 @@ const AddTestcase = () => {
         toast.dismiss(toastId);
         toast.error("Failed to add test cases.");
       }
-    } catch (err) {
+    } catch (error) {
       setLoading(false);
       toast.dismiss(toastId);
-      if (err.response && err.response.data && err.response.data.message) {
-        toast.error(err.response.data.message);
+      if (error?.response?.data?.message) {
+        toast.error(error.response.data.message);
       } else {
         toast.error("Something went wrong!");
       }

@@ -74,7 +74,6 @@ const Home = () => {
 
   useEffect(() => {
     const fetchProblems = async () => {
-      console.log(isAuthenticated);
       setLoading(true);
       const toastId = toast.loading("Loading problems...");
       try {
@@ -94,7 +93,7 @@ const Home = () => {
           toast.error("Failed to load problems.");
           isFirstMount.current = false;
         }
-      } catch (err) {
+      } catch (error) {
         if (isFirstMount.current) {
           toast.error("Something went wrong!");
           isFirstMount.current = false;

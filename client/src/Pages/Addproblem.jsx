@@ -103,11 +103,7 @@ const Addproblem = () => {
     } catch (error) {
       setLoading(false);
       toast.dismiss(toastId);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error?.response?.data?.message) {
         toast.dismiss(toastId);
         toast.error(error.response.data.message);
       } else {

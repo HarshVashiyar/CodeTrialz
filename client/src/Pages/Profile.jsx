@@ -39,11 +39,7 @@ const Profile = () => {
       } catch (error) {
         setIsLoading(false);
         toast.dismiss(toastID);
-        if (
-          error.response &&
-          error.response.data &&
-          error.response.data.message
-        ) {
+        if (error?.response?.data?.message) {
           if (isFirstMount.current) { 
             toast.error(error.response.data.message);
             isFirstMount.current = false;

@@ -66,11 +66,7 @@ const Verifyotp = () => {
     } catch (error) {
       toast.dismiss(toastId);
       setIsLoading(false);
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
+      if (error?.response?.data?.message) {
         toast.error(error.response.data.message);
       } else {
         toast.error("Something went wrong!");
