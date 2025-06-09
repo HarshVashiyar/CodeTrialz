@@ -6,6 +6,8 @@ CodeTrialz is a full-stack **online judge platform** that enables users to regis
 
 [https://code-trialz.harshvashiyar.in](https://code-trialz.harshvashiyar.in)
 
+[Demo Video / Tutorial](https://www.loom.com/share/1fc20058d7b14f1b848a253586bb9082?sid=97d1ae77-7fb2-43e3-8215-e5d9e84b1cff/)
+
 ## 📋 Table of Contents
 
 - [Features](#features)
