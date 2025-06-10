@@ -9,8 +9,9 @@ const gradientBorder =
 const ViewProblem = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const problemId = location.state?.problemId;
+  const problemName = location.state?.problemName;
   const previousPage = location.state?.previousPage;
+  const allTestCases = location.state?.allTestCases || true;
 
   const [problem, setProblem] = useState("");
   const [error, setError] = useState("");
@@ -25,7 +26,7 @@ const ViewProblem = () => {
           `${import.meta.env.VITE_BASE_URL}${
             import.meta.env.VITE_VIEW_PROBLEM_URL
           }`,
-          { params: { id: problemId } }
+          { params: { name: problemName, allTestCases } }
         );
         if (response.data?.success === true) {
           setLoading(false);
@@ -49,17 +50,7 @@ const ViewProblem = () => {
     };
 
     fetchProblem();
-    // eslint-disable-next-line
   }, []);
-
-  // const handleSubmit = () => {
-  //   navigate("/submit", {
-  //     state: {
-  //       problemId: problemId,
-  //       problemName: problem.name,
-  //     },
-  //   });
-  // };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">

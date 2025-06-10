@@ -16,38 +16,38 @@ const tagOptions = [
   "recursion",
   "implementation",
   "brute force",
-  "constructive algorithms",
-  "data structures",
+  // "constructive algorithms",
+  // "data structures",
   "dfs",
   "bfs",
   "number theory",
-  "combinatorics",
+  // "combinatorics",
   "geometry",
-  "bit manipulation",
+  // "bit manipulation",
   "two pointers",
-  "disjoint set union",
-  "shortest paths",
-  "probabilities",
-  "divide and conquer",
+  // "disjoint set union",
+  // "shortest paths",
+  // "probabilities",
+  // "divide and conquer",
   "hashing",
-  "interactive",
-  "fft",
-  "chinese remainder theorem",
-  "linked list",
-  "trie",
-  "sliding window",
-  "backtracking",
+  // "interactive",
+  // "fft",
+  // "chinese remainder theorem",
+  // "linked list",
+  // "trie",
+  // "sliding window",
+  // "backtracking",
   "heap",
-  "stack",
-  "memoization",
-  "topological sort",
-  "monotonic stack",
-  "segment tree",
-  "suffix array",
-  "minimum spanning tree",
-  "strongly connected components",
-  "game theory",
-  "simulation",
+  // "stack",
+  // "memoization",
+  // "topological sort",
+  // "monotonic stack",
+  // "segment tree",
+  // "suffix array",
+  // "minimum spanning tree",
+  // "strongly connected components",
+  // "game theory",
+  // "simulation",
   "bitmask",
 ];
 
@@ -132,22 +132,22 @@ const Admin = () => {
     );
   };
 
-  const handleViewProblem = (problemId) => {
-    navigate("/viewproblem", { state: { problemId, previousPage: location.pathname } });
+  const handleViewProblem = (problemName) => {
+    navigate("/viewproblem", { state: { problemName, previousPage: location.pathname, allTestCases: true } });
   };
 
-  const handleSelectProblem = (problemId) => {
-    if (problemId === "all") {
+  const handleSelectProblem = (problemName) => {
+    if (problemName === "all") {
       if (selectedProblems.length === filteredProblems.length) {
         setSelectedProblems([]);
       } else {
-        setSelectedProblems(filteredProblems.map((p) => p._id));
+        setSelectedProblems(filteredProblems.map((p) => p.name));
       }
     } else {
       setSelectedProblems((prev) =>
-        prev.includes(problemId)
-          ? prev.filter((id) => id !== problemId)
-          : [...prev, problemId]
+        prev.includes(problemName)
+          ? prev.filter((name) => name !== problemName)
+          : [...prev, problemName]
       );
     }
   };
@@ -164,13 +164,13 @@ const Admin = () => {
           import.meta.env.VITE_REMOVE_PROBLEMS_URL
         }`,
         {
-          data: { problemIds: selectedProblems },
+          data: { problemNames: selectedProblems },
           withCredentials: true,
         }
       );
       if (response.data?.success === true) {
         setProblems((prev) =>
-          prev.filter((p) => !selectedProblems.includes(p._id))
+          prev.filter((p) => !selectedProblems.includes(p.name))
         );
         setSelectedProblems([]);
         toast.success("Problems removed successfully!");
@@ -195,12 +195,12 @@ const Admin = () => {
         `${import.meta.env.VITE_BASE_URL}${
           import.meta.env.VITE_VERIFY_PROBLEMS_URL
         }`,
-        { problemIds: selectedProblems },
+        { problemNames: selectedProblems },
         { withCredentials: true }
       );
       if (response.data?.success) {
         setProblems((prev) =>
-          prev.filter((p) => !selectedProblems.includes(p._id))
+          prev.filter((p) => !selectedProblems.includes(p.name))
         );
         setSelectedProblems([]);
         toast.success("Problems verified successfully!");
@@ -351,16 +351,16 @@ const Admin = () => {
                     </div>
                   </div>
                 </li>
-                {filteredProblems.map((problem) => (
+                {filteredProblems.map((problem, idx) => (
                   <li
-                    key={problem._id}
+                    key={idx}
                     className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-4 hover:bg-purple-50/40 transition group"
                   >
                     <div className="flex items-center gap-4">
                       <input
                         type="checkbox"
-                        checked={selectedProblems.includes(problem._id)}
-                        onChange={() => handleSelectProblem(problem._id)}
+                        checked={selectedProblems.includes(problem.name)}
+                        onChange={() => handleSelectProblem(problem.name)}
                         className="accent-blue-500 hover:cursor-pointer"
                       />
                       <div>
@@ -378,7 +378,7 @@ const Admin = () => {
                           ))}
                         </div>
                         <div className="mt-1 text-xs text-gray-500">
-                          Created by: {problem.createdBy?.fullName || "Unknown"}
+                          Created by: {problem.createdBy || "Unknown"}
                         </div>
                       </div>
                     </div>
@@ -396,7 +396,7 @@ const Admin = () => {
                         {problem.difficulty}
                       </span>
                       <button
-                        onClick={() => handleViewProblem(problem._id)}
+                        onClick={() => handleViewProblem(problem.name)}
                         className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-purple-300 hover:cursor-pointer"
                       >
                         View Problem

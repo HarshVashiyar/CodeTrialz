@@ -19,7 +19,7 @@ const ProblemSolver = () => {
   const navigate = useNavigate();
   const isFirstMount = useRef(true);
   const { isAuthenticated } = useAuth();
-  const problemId = location.state?.problemId;
+  const problemName = location.state?.problemName;
 
   const [problem, setProblem] = useState("");
   const [code, setCode] = useState("");
@@ -31,7 +31,7 @@ const ProblemSolver = () => {
   const [activeTab, setActiveTab] = useState("description");
 
   useEffect(() => {
-    if (!problemId) {
+    if (!problemName) {
       navigate("/");
       return;
     }
@@ -41,7 +41,7 @@ const ProblemSolver = () => {
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_BASE_URL}${import.meta.env.VITE_VIEW_PROBLEM_URL}`,
-          { params: { id: problemId } }
+          { params: { name: problemName, allTestCases: false } }
         );
         if (response.data?.success) {
           setProblem(response.data.problem);
@@ -65,7 +65,7 @@ const ProblemSolver = () => {
     };
     
     fetchProblem();
-  }, [problemId, navigate]);
+  }, [problemName, navigate]);
 
   const handleRun = async (e) => {
     e.preventDefault();
@@ -132,7 +132,7 @@ const ProblemSolver = () => {
         {
           code,
           language,
-          problemId,
+          problemName: problem.name,
         },
         { withCredentials: true }
       );
@@ -155,7 +155,7 @@ const ProblemSolver = () => {
       setIsSubmitting(false);
       toast.dismiss(toastId);
       setTimeout(() => {
-        navigate("/submissions", { state: { previousPath: "/problemsolver", problemId: problemId } });
+        navigate("/submissions", { state: { previousPath: "/problemsolver", problemName: problemName } });
       }, 700);
     }
   };

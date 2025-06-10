@@ -143,13 +143,13 @@ const Profile = () => {
             <div className="grid grid-cols-3 gap-4 w-full mb-6">
               <div className="text-center p-3 bg-blue-50 rounded-xl shadow-sm">
                 <div className="text-xl font-bold text-blue-600">
-                  {user?.problemsCreated?.length ?? 0}
+                  {user?.numberOfProblemsCreated ?? 0}
                 </div>
                 <div className="text-xs text-gray-500">Problems Created</div>
               </div>
               <div className="text-center p-3 bg-purple-50 rounded-xl shadow-sm transition-colors">
                 <div className="text-xl font-bold text-purple-600">
-                  {user?.submissions?.length ?? 0}
+                  {user?.numberOfSubmissions ?? 0}
                 </div>
                 <div className="text-xs text-gray-500">Submissions</div>
               </div>
@@ -162,10 +162,10 @@ const Profile = () => {
             </div>
 
             <div className="w-full space-y-2 mb-6">
-              <div className="flex justify-between py-1.5 px-4 bg-gray-50 rounded-lg text-sm">
+              {/* <div className="flex justify-between py-1.5 px-4 bg-gray-50 rounded-lg text-sm">
                 <span className="text-gray-600 font-medium">Date of Birth</span>
                 <span className="text-gray-800">{user?.dob || "N/A"}</span>
-              </div>
+              </div> */}
               <div className="flex justify-between py-1.5 px-4 bg-gray-50 rounded-lg text-sm">
                 <span className="text-gray-600 font-medium">
                   Account Created

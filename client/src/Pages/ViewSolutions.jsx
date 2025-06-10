@@ -67,7 +67,7 @@ const ViewSolutions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isFirstMount = useRef(true);
-  const problemId = location.state?.problemId;
+  const problemTitle = location.state?.problemName;
 
   const [submissions, setSubmissions] = useState([]);
   const [problemName, setProblemName] = useState("");
@@ -83,8 +83,8 @@ const ViewSolutions = () => {
   };
 
   useEffect(() => {
-    if (!problemId) {
-      toast.error("Problem ID is required");
+    if (!problemTitle) {
+      toast.error("Problem name is required");
       navigate("/");
       return;
     }
@@ -97,7 +97,7 @@ const ViewSolutions = () => {
           `${import.meta.env.VITE_BASE_URL}${
             import.meta.env.VITE_GET_SOLUTIONS_URL
           }`,
-          { params: { problemId } }
+          { params: { problemName: problemTitle } }
         );
 
         if (response.data?.success) {
@@ -127,7 +127,7 @@ const ViewSolutions = () => {
     };
 
     fetchSubmissions();
-  }, [problemId, navigate]);
+  }, [problemTitle, navigate]);
 
   const getStatusColor = (verdict) => {
     if (!verdict) return "text-gray-600";
@@ -278,9 +278,9 @@ const ViewSolutions = () => {
                     </td>
                   </tr>
                 ) : (
-                  submissions.map((submission) => (
+                  submissions.map((submission, idx) => (
                     <tr
-                      key={submission._id}
+                      key={idx}
                       className="hover:bg-gray-50/50 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -288,7 +288,7 @@ const ViewSolutions = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-blue-600 hover:text-blue-800">
-                          {submission.user?.fullName || "Anonymous"}
+                          {submission.user || "Anonymous"}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">

@@ -17,38 +17,38 @@ const tagOptions = [
   "recursion",
   "implementation",
   "brute force",
-  "constructive algorithms",
-  "data structures",
+  // "constructive algorithms",
+  // "data structures",
   "dfs",
   "bfs",
   "number theory",
-  "combinatorics",
+  // "combinatorics",
   "geometry",
-  "bit manipulation",
+  // "bit manipulation",
   "two pointers",
-  "disjoint set union",
-  "shortest paths",
-  "probabilities",
-  "divide and conquer",
+  // "disjoint set union",
+  // "shortest paths",
+  // "probabilities",
+  // "divide and conquer",
   "hashing",
-  "interactive",
-  "fft",
-  "chinese remainder theorem",
-  "linked list",
-  "trie",
-  "sliding window",
-  "backtracking",
+  // "interactive",
+  // "fft",
+  // "chinese remainder theorem",
+  // "linked list",
+  // "trie",
+  // "sliding window",
+  // "backtracking",
   "heap",
-  "stack",
-  "memoization",
-  "topological sort",
-  "monotonic stack",
-  "segment tree",
-  "suffix array",
-  "minimum spanning tree",
-  "strongly connected components",
-  "game theory",
-  "simulation",
+  // "stack",
+  // "memoization",
+  // "topological sort",
+  // "monotonic stack",
+  // "segment tree",
+  // "suffix array",
+  // "minimum spanning tree",
+  // "strongly connected components",
+  // "game theory",
+  // "simulation",
   "bitmask",
 ];
 
@@ -132,12 +132,12 @@ const Home = () => {
     );
   };
 
-  const handleViewProblem = (problemId) => {
-    navigate(`/problemsolver`, { state: { problemId } });
+  const handleViewProblem = (problemName) => {
+    navigate(`/problemsolver`, { state: { problemName } });
   };
 
-  const handleViewSolutions = (problemId) => {
-    navigate("/viewsolutions", { state: { problemId } });
+  const handleViewSolutions = (problemName) => {
+    navigate("/viewsolutions", { state: { problemName } });
   };
 
   return (
@@ -253,7 +253,7 @@ const Home = () => {
             <ul className="divide-y">
               {filteredProblems.map((problem) => (
                 <li
-                  key={problem._id}
+                  key={problem.name}
                   className="flex flex-col md:flex-row md:items-center justify-between gap-2 px-6 py-4 hover:bg-purple-50/40 transition group"
                 >
                   <div className="flex-1 min-w-0">
@@ -271,7 +271,7 @@ const Home = () => {
                       ))}
                     </div>
                     <div className="mt-1 text-xs text-gray-500">
-                      Created by: {problem.createdBy?.fullName || "Unknown"}
+                      Created by: {problem.createdBy || "Unknown"}
                     </div>
                   </div>
                   <div className="flex items-center gap-4 mt-2 md:mt-0">
@@ -288,13 +288,13 @@ const Home = () => {
                       {problem.difficulty}
                     </span>
                     <button
-                      onClick={() => handleViewProblem(problem._id)}
+                      onClick={() => handleViewProblem(problem.name)}
                       className="bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-purple-300 hover:cursor-pointer"
                     >
                       View Problem
                     </button>
                     <button
-                      onClick={() => handleViewSolutions(problem._id)}
+                      onClick={() => handleViewSolutions(problem.name)}
                       className={`bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300
                         ${isAuthenticated ? "hover:from-blue-700 hover:to-purple-600 hover:cursor-pointer" : "opacity-50 cursor-not-allowed pointer-events-none"}
                       `}

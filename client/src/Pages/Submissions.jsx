@@ -85,7 +85,7 @@ const Submissions = () => {
   const isFirstMount = useRef(true);
   const location = useLocation();
   const previousPath = location.state?.previousPath || "/";
-  const problemId = location.state?.problemId || null;
+  const problemName = location.state?.problemName || null;
 
   const [submissions, setSubmissions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -196,14 +196,14 @@ const Submissions = () => {
     }
   };
 
-  const handleGetSuggestions = async (submissionId) => {
+  const handleGetSuggestions = async (code) => {
     const toastId = toast.loading("Prompting AI for suggestions...");
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASE_URL}${
           import.meta.env.VITE_GET_SUGGESTIONS_URL
         }`,
-        { submissionId },
+        { code },
         { withCredentials: true }
       );
       if (response.data?.success === true) {
@@ -250,7 +250,7 @@ const Submissions = () => {
                 Solve Problems
               </button>
               <button
-                onClick={() => navigate(previousPath, { state: { problemId } })}
+                onClick={() => navigate(previousPath, { state: { problemName } })}
                 className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 hover:cursor-pointer"
               >
                 Back
@@ -319,9 +319,9 @@ const Submissions = () => {
                     </td>
                   </tr>
                 ) : (
-                  submissions.map((submission) => (
+                  submissions.map((submission, idx) => (
                     <tr
-                      key={submission._id}
+                      key={idx}
                       className="hover:bg-gray-50/50 transition-colors"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -403,7 +403,7 @@ const Submissions = () => {
                       </td> */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <button
-                          onClick={() => handleGetSuggestions(submission._id)}
+                          onClick={() => handleGetSuggestions(submission.code)}
                           className="text-blue-600 hover:text-blue-800 hover:underline hover:cursor-pointer text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           disabled={submission.verdict !== "Accepted"}
                         >

@@ -10,7 +10,7 @@ const AddTestcase = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const problemId = location.state?.problemId || "";
+  const problemName = location.state?.problemName || "";
 
   const [testCases, setTestCases] = useState([{ input: "", output: "" }]);
   const [loading, setLoading] = useState(false);
@@ -40,8 +40,8 @@ const AddTestcase = () => {
         return;
       }
     }
-    if (!problemId) {
-      setError("Problem ID is missing in the URL.");
+    if (!problemName) {
+      setError("Problem name is missing in the URL.");
       return;
     }
     setLoading(true);
@@ -52,7 +52,7 @@ const AddTestcase = () => {
           import.meta.env.VITE_ADD_TESTCASE_URL
         }`,
         {
-          problemId: problemId,
+          problemName: problemName,
           testCases: testCases.map((tc) => ({
             input: tc.input.trim(),
             output: tc.output.trim(),

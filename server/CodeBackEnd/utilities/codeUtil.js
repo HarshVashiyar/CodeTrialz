@@ -62,6 +62,12 @@ const executeCpp = (filePath, inputFilePath) => {
                             message: "Time limit exceeded",
                         });
                     }
+                    if (runError.signal) {
+                        return reject({
+                            type: "runtime_error",
+                            message: `Process terminated with signal ${runError.signal}`,
+                        });
+                    }
                     return reject({
                         type: "runtime_error",
                         message: runStderr || runError.message,
@@ -92,11 +98,17 @@ const executePython = (filePath, inputFilePath) => {
                         message: "Time limit exceeded",
                     });
                 }
-                const fullError = `${stderr}\n${error.message}`;
+                const fullError = `${stderr}\n${error.message}`.trim();
                 if (/SyntaxError|IndentationError|NameError/.test(fullError)) {
                     return reject({
                         type: "compile_error",
                         message: fullError,
+                    });
+                }
+                if (error.signal) {
+                    return reject({
+                        type: "runtime_error",
+                        message: `Process terminated with signal ${error.signal}`,
                     });
                 }
                 return reject({
@@ -127,6 +139,12 @@ const executeJavaScript = (filePath, inputFilePath) => {
                     return reject({
                         type: "compile_error",
                         message: stderr,
+                    });
+                }
+                if (error.signal) {
+                    return reject({
+                        type: "runtime_error",
+                        message: `Process terminated with signal ${error.signal}`,
                     });
                 }
                 return reject({
@@ -168,7 +186,7 @@ const executeJava = (filePath, inputFilePath) => {
             resolve(stdout);
         });
     });
-}
+};
 
 module.exports = {
     generateFile,

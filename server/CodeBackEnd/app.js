@@ -3,7 +3,7 @@ const app = express();
 const cors = require('cors');
 const PORT = process.env.PORT || 8080;
 const execRouter = require('./routes/execRouter');
-const GENERAL_BACKEND_URI = process.env.GENERAL_BACKEND_URI.split(',') || ['http://localhost:8090'];
+const GENERAL_BACKEND_URI = (process.env.GENERAL_BACKEND_URI || 'http://localhost:8090').split(',');
 
 app.use(cors({
     origin: function (origin, callback) {

@@ -74,7 +74,21 @@ const handleUserSignIn = async (req, res) => {
 const handleGetAllUsers = async (req, res) => {
     try {
         const users = await User.find();
-        return res.status(200).json({ success: true, users });
+        return res.status(200).json({
+            success: true,
+            users : users.map(user => ({
+                fullName: user.fullName,
+                role: user.role,
+                email: user.email,
+                dob: user.dob,
+                pathToProfilePhoto: user.pathToProfilePhoto,
+                numberOfProblemsSolved: user.numberOfProblemsSolved,
+                problemsCreated: user.problemsCreated,
+                submissions: user.submissions,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+            }))
+        });
     }
     catch (error) {
         console.error("Error fetching users:", error);
@@ -89,7 +103,21 @@ const handleGetUserById = async (req, res) => {
         if (!user) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
-        return res.status(200).json({ success: true, user });
+        return res.status(200).json({
+            success: true,
+            user : {
+                fullName: user.fullName,
+                role: user.role,
+                email: user.email,
+                dob: user.dob,
+                pathToProfilePhoto: user.pathToProfilePhoto,
+                numberOfProblemsSolved: user.numberOfProblemsSolved,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
+                numberOfProblemsCreated: user.problemsCreated.length,
+                numberOfSubmissions: user.submissions.length
+            }
+        });
     }
     catch (error) {
         console.error("Error fetching user:", error);
@@ -164,7 +192,7 @@ const handleViewSubmissions = async (req, res) => {
             .lean();
 
         const formattedSubmissions = submissions.map(submission => ({
-            _id: submission._id,
+            // _id: submission._id,
             createdAt: submission.createdAt,
             problemName: submission.problem?.name || 'Unknown Problem',
             code: submission.code,

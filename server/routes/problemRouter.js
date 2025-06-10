@@ -2,7 +2,7 @@ const express = require('express');
 const app = express.Router();
 const {
     handleGetAllProblems,
-    handleGetProblemById,
+    handleGetProblemByName,
     handleAddProblem,
     handleAddTestCase,
     handleVerifyProblems,
@@ -18,7 +18,7 @@ app.get('/', (req, res) => {
 
 app.get('/getall', handleGetAllProblems);
 
-app.get('/get', handleGetProblemById);
+app.get('/get', handleGetProblemByName);
 
 app.post('/addproblem', authenticateUser, handleAddProblem);
 

@@ -48,16 +48,16 @@ const handleRunCode = async (req, res) => {
 };
 
 const handleSubmitCode = async (req, res) => {
-    const { problemId, language = "cpp", code } = req.body;
+    const { problemName, language = "cpp", code } = req.body;
     const { id } = req.user;
-    if (!id || !problemId || !code) {
+    if (!id || !problemName || !code) {
         return res.status(400).json({ 
             success: false, 
-            message: "Missing required fields: user, problemId, and code are required" 
+            message: "Missing required fields: user, problemName, and code are required" 
         });
     }
     try {
-        const problem = await Problem.findById(problemId).select('testCases');
+        const problem = await Problem.findOne({ name: problemName }).select('testCases');
         if (!problem) {
             return res.status(404).json({ 
                 success: false, 
@@ -93,7 +93,7 @@ const handleSubmitCode = async (req, res) => {
         const { verdict, maxExecutionTime, totalExecutionTime, failedTestCase } = result;
 
         const hasAlreadySolved = await Submission.findOne({
-            problem: problemId,
+            problem: problem._id,
             user: id,
             verdict: "Accepted"
         });
@@ -102,7 +102,7 @@ const handleSubmitCode = async (req, res) => {
             code,
             language,
             verdict,
-            problem: problemId,
+            problem: problem._id,
             user: id,
             executionTime: maxExecutionTime,
             score: verdict === "Accepted" ? problem.difficulty : 0,
@@ -122,7 +122,7 @@ const handleSubmitCode = async (req, res) => {
             ),
             ...(verdict === "Accepted" 
                 ? [Problem.findByIdAndUpdate(
-                    problemId,
+                    problem._id,
                     { $push: { solutions: submission._id } }
                   )]
                 : []
@@ -135,7 +135,7 @@ const handleSubmitCode = async (req, res) => {
             message: verdict === "Accepted" 
                 ? "All test cases passed!" 
                 : `Failed at test case ${failedTestCase}`,
-            submissionId: submission._id,
+            //submissionId: submission._id,
             executionTime: maxExecutionTime,
             totalTime: totalExecutionTime,
             failedTestCase: failedTestCase
@@ -152,18 +152,16 @@ const handleSubmitCode = async (req, res) => {
 };
 
 const handleGetSuggestions = async (req, res) => {
-    const { submissionId } = req.body;
-    const submission = await Submission.findById(submissionId);
-    if(submission.verdict !== "Accepted") {
-        return res.json({ success: false, message: "Get your code accepted to unlock ai suggestions"});
+    const { prompt = "", code, verdict = "Accepted" } = req.body;
+    if (verdict !== "Accepted") {
+        return res.json({ success: false, message: "Get your code accepted to unlock ai suggestions" });
     }
-    const code = submission.code;
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.0-flash",
             contents: [
                 { role: "user", parts: [
-                    { text: "Give point-wise, concise suggestions to improve the following code. Return in plain text format only—no extra remarks or commentary. At the end, include the improved version of the code. Code: " + code }
+                    { text: prompt || "Give point-wise, concise suggestions to improve the following code. Return in plain text format only—no extra remarks or commentary. At the end, include the improved version of the code. Code: " + code }
                 ]}
             ]
         });
