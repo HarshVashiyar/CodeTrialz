@@ -140,6 +140,28 @@ const Home = () => {
     navigate("/viewsolutions", { state: { problemName } });
   };
 
+  const handleAddProblemClick = () => {
+    if (isAuthenticated) {
+      navigate("/addproblem");
+    } else {
+      toast.error("Please Sign In To Add A Problem.");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 700);
+    }
+  };
+
+  const handleViewSolutionsClick = () => {
+    if (isAuthenticated) {
+      navigate("/viewsolutions");
+    } else {
+      toast.error("Please Sign In To View Solutions.");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 700);
+    }
+  }
+
   return (
     <div className="flex flex-col items-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 py-8">
       <Toaster richColors position="top-center" />
@@ -153,11 +175,8 @@ const Home = () => {
               Problem List
             </h1>
             <button
-              onClick={() => navigate("/addproblem")}
-              className={`hover:cursor-pointer bg-gradient-to-r from-green-500 to-blue-500 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-green-300
-                ${!isAuthenticated ? "opacity-50 cursor-not-allowed pointer-events-none" : "hover:from-green-600 hover:to-blue-600"}
-              `}
-              disabled={!isAuthenticated}
+              onClick={handleAddProblemClick}
+              className="hover:cursor-pointer bg-gradient-to-r from-green-500 to-blue-500 text-white px-7 py-2.5 rounded-xl font-bold shadow-lg transition-all duration-200 text-lg tracking-wide focus:outline-none focus:ring-2 focus:ring-green-300 hover:from-green-600 hover:to-blue-600 hover:bg-blue-600"
             >
               Add Problem
             </button>
@@ -294,10 +313,8 @@ const Home = () => {
                       View Problem
                     </button>
                     <button
-                      onClick={() => handleViewSolutions(problem.name)}
-                      className={`bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300
-                        ${isAuthenticated ? "hover:from-blue-700 hover:to-purple-600 hover:cursor-pointer" : "opacity-50 cursor-not-allowed pointer-events-none"}
-                      `}
+                      onClick={handleViewSolutionsClick}
+                      className="bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300 hover:from-blue-700 hover:to-purple-600 hover:cursor-pointer"
                     >
                       View Solutions
                     </button>

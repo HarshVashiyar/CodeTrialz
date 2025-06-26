@@ -46,7 +46,7 @@ const ProblemSolver = () => {
         if (response.data?.success) {
           setProblem(response.data.problem);
           if (isFirstMount.current) {
-            toast.success("Problem loaded successfully!");
+            // toast.success("Problem loaded successfully!");
             isFirstMount.current = false;
           }
         } else {
@@ -69,6 +69,13 @@ const ProblemSolver = () => {
 
   const handleRun = async (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      toast.error("Please Sign In To Run Code.");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 700);
+      return;
+    }
     if(isRunning) return;
     setIsRunning(true);
     setOutput("");
@@ -119,6 +126,13 @@ const ProblemSolver = () => {
   const handleSubmit = async () => {
     if (!code.trim()) {
       toast.error("Please write some code before submitting");
+      return;
+    }
+    if (!isAuthenticated) {
+      toast.error("Please Sign In To Submit Code.");
+      setTimeout(() => {
+        navigate("/signin");
+      }, 700);
       return;
     }
     if (isSubmitting) return;
@@ -312,23 +326,15 @@ const ProblemSolver = () => {
                 <div className="flex gap-3">
                   <button
                     onClick={handleRun}
-                    disabled={isRunning || isSubmitting || !isAuthenticated}
-                    className={`px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-md
-                        ${!isAuthenticated
-                        ? "opacity-50 cursor-not-allowed pointer-events-none"
-                        : "hover:from-blue-700 hover:to-purple-700 hover:cursor-pointer"}
-                    `}
+                    disabled={isRunning || isSubmitting}
+                    className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:from-blue-700 hover:to-purple-700 hover:cursor-pointer"
                   >
                     {isRunning ? "Running..." : "Run"}
                   </button>
                   <button
                     onClick={handleSubmit}
-                    disabled={isRunning || isSubmitting || !isAuthenticated}
-                    className={`px-6 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-md
-                        ${!isAuthenticated
-                        ? "opacity-50 cursor-not-allowed pointer-events-none"
-                        : "hover:from-green-600 hover:to-blue-600 hover:cursor-pointer"}
-                    `}
+                    disabled={isRunning || isSubmitting}
+                    className="px-6 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl text-sm font-semibold transition-all duration-200 shadow-md hover:from-green-600 hover:to-blue-600 hover:cursor-pointer"
                   >
                     {isSubmitting ? "Submitting..." : "Submit"}
                   </button>

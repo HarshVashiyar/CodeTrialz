@@ -11,6 +11,9 @@ const handleSendOTP = async (req, res) => {
         // const { newUser } = req.body;
         if (!email) return res.status(400).json({ success: false, message: "Email is required!" });
         const existingUser = await User.findOne({ email });
+        if (!existingUser) {
+            return res.status(404).json({ success: false, message: "User with provided email not found!" });
+        }
         // if(!newUser){
         //     if (!existingUser) {
         //         return res.status(404).json({ success: false, message: "User with provided email not found!" });

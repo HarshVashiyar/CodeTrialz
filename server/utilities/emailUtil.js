@@ -37,7 +37,7 @@ const sendOTP = async (email) => {
 
     try {
         const response = await transporter.sendMail(content);
-        return { otp, expirationTime };
+        return { expirationTime };
     } catch (error) {
         console.error(`Error sending OTP to ${email}:`, error);
         throw new Error('Failed to send OTP');
