@@ -151,9 +151,9 @@ const Home = () => {
     }
   };
 
-  const handleViewSolutionsClick = () => {
+  const handleViewSolutionsClick = (name) => {
     if (isAuthenticated) {
-      navigate("/viewsolutions");
+      navigate("/viewsolutions", { state: { problemName: name } });
     } else {
       toast.error("Please Sign In To View Solutions.");
       setTimeout(() => {
@@ -313,7 +313,7 @@ const Home = () => {
                       View Problem
                     </button>
                     <button
-                      onClick={handleViewSolutionsClick}
+                      onClick={() => handleViewSolutionsClick(problem.name)}
                       className="bg-gradient-to-r from-blue-600 to-purple-500 text-white px-4 py-1.5 rounded-xl transition font-semibold text-sm shadow-md focus:outline-none focus:ring-2 focus:ring-blue-300 hover:from-blue-700 hover:to-purple-600 hover:cursor-pointer"
                     >
                       View Solutions
