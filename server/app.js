@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const PORT = 8090 || process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI || '';
-const FRONT_END_URI = process.env.FRONT_END_URI.split(',') || ['http://localhost:5173'];
+const FRONT_END_URI = process.env.FRONT_END_URI.split(',') || ['https://code-trialz.harshvashiyar.in'];
 const staticRouter = require('./routes/staticRouter');
 
 app.use(cors({
