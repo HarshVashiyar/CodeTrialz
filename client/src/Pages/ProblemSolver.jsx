@@ -154,6 +154,7 @@ const ProblemSolver = () => {
         toast.success("All test cases passed! 🎉");
       } else {
         toast.error(
+          //eslint-disable-next-line no-constant-binary-expression
           `${response.data?.verdict}: ${response.data?.message}` ||
             "Something went wrong!"
         );
@@ -350,7 +351,7 @@ const ProblemSolver = () => {
                   className={`w-full h-full p-4 font-mono text-sm bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none shadow-inner transition-all duration-200 ${
                     isRunning || isSubmitting ? "cursor-not-allowed" : "hover:cursor-text"
                   }`}
-                  placeholder="Code execution and submission instance has been turned off to save cost."
+                  placeholder="Note: Code execution & submission instance may have been turned off to save cost."
                   disabled={isRunning || isSubmitting}
                   onKeyDown={(e) => {
                     if (e.key === "Tab") {
